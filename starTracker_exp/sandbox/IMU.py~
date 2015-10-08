@@ -1,0 +1,17 @@
+import serial
+import re
+
+ser = serial.Serial( '/dev/ttyUSB0', baudrate = 57600 )
+ser.write('g')
+
+angles = [0]*6
+
+while True:
+    ser.write('g')
+
+    data = ser.readline()
+    dataSplit = re.findall( '-?\d+\.\d*', data )
+    dataSplit = filter( None, dataSplit )
+
+    #if len( dataSplit ) == 6:
+    readings = [ float[dat] for dat in dataSplit ]
