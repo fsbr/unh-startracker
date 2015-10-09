@@ -20,9 +20,20 @@ def acosd(arg):
 def atand(arg):
     return m.degrees(m.acos(arg))
 
-# open logfile
-f = open('logfile', 'w')
+# doing a bunch of different logs
+dLog = open('dLog', 'w')
 
+# for the parameters that aren't supposed to change on each pass
+inertialParams = open('inertials0', 'w')
+
+# for the parameters that are changing each iteration
+changingParams = open('changes0', 'w')
+
+ip1 = open('inertials1', 'w')
+cp1 = open('changes1', 'w')
+
+ip2 = open('inertials2', 'w')
+cp2 = open('changes2', 'w')
 # to test this we're goign to use "regulus" to calculate the location
 
 class Sextant:
@@ -69,17 +80,18 @@ class Sextant:
         print self.Ho
 
 class Observation:
-
+    # LF is LONGITUDE
+    # BF is LATITUDE
     # this class defines the observations that we get from the sextant or CNC
     # CNC = CelNavCamera.  PRETTY SWAG
     
     # shared among the rest of the instances of this object
-    fixDate = [2015, 7, 4]      # (year, month, date)
-    fixTime = [21, 0, 0]        # (hour, minute second)
-    v = 20                      # knots
-    track = 325                 # track heading in degrees
-    lf = -15.0                  # est. Lat, @ fixTime W Positive, degrees
-    bf = 32.0                   # est. Long @ fixTime N positive, degrees    
+    fixDate = [2015, 9, 20]      # (year, month, date)
+    fixTime = [1, 30, 0]        # (hour, minute second)
+    v = 0                      # knots
+    track = 0                 # track heading in degrees
+    lf = -45                  # est. long, @ fixTime E+ W-, degrees
+    bf = -45                   # est. lat @ fixTime N+ S-, degrees    
 
     def __init__(self, t,  ho, sha, ghAries0, ghAries1, dec):
         
@@ -151,11 +163,15 @@ class Observation:
         return output
 
     def calcLongLat(self, longEst, latEst):
+        print "calcLongLat"
+        print "longEst is %s" %longEst
+        print "latEst is %s" %latEst
         # calculates the estimate of lat and long based on the running track
         # of the vessel
 
         lng = longEst + ((self.hourTea*(self.v/60)*sind(self.track))/cosd(latEst))
-        lat = latEst + (self.hourTea*(self.v/60)*cosd(self.track)) 
+        lat = (latEst + (self.hourTea*(self.v/60)*cosd(self.track)))%90 # really just throwing smth in there to see what sticks 
+        print "lng = %s lat = %s" %(lng, lat)
         return [lng, lat]
         
 
@@ -225,6 +241,30 @@ class Observation:
         print "hc == " + str(self.hc)
         print "z == " + str(self.z)
         print "p == " + str(self.p)
+    
+    def writeInertial(self, fileName):
+        # this writes the inertial logfile for that observation 
+        fileName.write('t == %s\n' %(self.t))
+        fileName.write('ho == %s\n' %(self.ho))
+        fileName.write('ghAries0 == %s\n' %(self.ghAries0))
+        fileName.write('ghAries1 == %s\n' %(self.ghAries1))
+        fileName.write('sha == %s\n' %(self.sha))
+        fileName.write('increment == %s\n' %(self.increment))
+        fileName.write('hourTea == %s\n' %(self.hourTea))
+        fileName.write('ghaA == %s\n' %(self.ghaA))
+        fileName.write('gha == %s\n' %(self.gha))
+        fileName.write('dec == %s\n' %(self.dec))
+        fileName.write('\n\n\n')
+    
+    def writeChanging(self,fileName):
+        
+        fileName.write('lng == %s\n' %(self.lng))
+        fileName.write('lat == %s\n' %(self.lat))
+        fileName.write('lha == %s\n' %(self.lha))
+        fileName.write('hc == %s\n' %(self.hc))
+        fileName.write('z == %s\n' %(self.z))
+        fileName.write('p == %s\n' %(self.p))
+        fileName.write('\n\n\n')
 
     
 def locateMe(obs, count, newLong, newLat):
@@ -288,19 +328,19 @@ def locateMe(obs, count, newLong, newLat):
     # FIRST PASS
     # calculate longitude from the averaging method 
     newLongOffset = (A*E - B*D)/(G*cosd(oldLat))
-    newLong = oldLong + newLongOffset
+    newLong = (oldLong + newLongOffset) #i'm trying mod 360
     print "long off == %s " %str(newLongOffset)
     print "newlong == %s " %str(newLong)
 
     # calculate latitude from the averaging method
     newLatOffset = (C*D-B*E)/(G)
-    newLat  = oldLat +newLatOffset
+    newLat  = (oldLat +newLatOffset)
     print newLat
     print "n lat off == %s" %str(newLatOffset)
 
     d = 60*m.sqrt((newLong-oldLong)**2*cosd(oldLat)**2 + (newLat - oldLat)**2)
     print  "d == %s" %str(d)
-    f.write("%s\n" %str(d))
+    dLog.write("%s\n" %d)
     
     return [newLong, newLat, d]
 
@@ -322,6 +362,9 @@ class Image:
 # this way is OP when you want to test a part of the code separately
 # and you don't want to use FUCKING matlab
 if __name__ == "__main__":
+
+    # the monte carlo test has to start around this part of the code
+    # these are the sample observations from the almanac
                         #t            Ho      sha          gha0
     regulus = Observation([20, 39, 23], 27.2674,[207, 42.3], [222, 30.6], 
                            #gha1        dec
@@ -332,31 +375,76 @@ if __name__ == "__main__":
 
     kochab = Observation([21, 10, 34], 47.5309, [137, 19.7], [237, 33.1],
                           [252, 35.6], [74, 5.9])
+
+
+    # Shuai and I gathered the following observations from the Protractor Sextant, these Ho values are off by a lot
+    altair1 = Observation([01, 29, 46], 55.219, [62, 06.6], [13, 36.6], [28, 39.1],
+                            [8, 55.0])
    
+    altair2 = Observation([01, 37, 53], 54.626 , [62, 06.6], [13, 36.6], [28, 39.1],
+                            [8, 55.0])
+    altair3 = Observation([01, 29, 46], 55.219, [62, 06.6], [13, 36.6], [28, 39.1],
+                            [8, 55.0])
+    
     # regulus.printAns()
     # antares.printAns()
     # kochab.printAns()
 
-    obs = [regulus, antares, kochab]
-
+    # obs = [regulus, antares, kochab]
+    obs = [altair1, altair2, altair3]
     # first time
     count =0 
+    altair1.writeInertial(inertialParams) 
+    altair1.writeChanging(changingParams) 
+
+    altair2.writeInertial(ip1) 
+    altair2.writeChanging(cp1) 
+
+    altair3.writeInertial(ip2) 
+    altair3.writeChanging(cp2) 
+
     location = locateMe(obs, count,0,0)
     print "location is %s" %str(location)
-    
+    altair1.writeInertial(inertialParams) 
+    altair1.writeChanging(changingParams) 
+
+    altair2.writeInertial(ip1) 
+    altair2.writeChanging(cp1) 
+
+    altair3.writeInertial(ip2) 
+    altair3.writeChanging(cp2) 
+
+    # iterate the algorithm 10x
     while count < 10:
         for x in obs:
             x.trackStar(location[0], location[1])
-            # print " new long = %s" %str(x.lng)
-            # print "new lat = %s" %str(x.lat)
-            # print "new lha = %s" %str(x.lha)
-            # print "new hc = %s" %str(x.hc)
-            # print "new z = %s" %str(x.z)
-            # print "new p = %s" %str(x.p)
+    #        print " new long = %s" %str(x.lng)
+    #        print "new lat = %s" %str(x.lat)
+           # print "new lha = %s" %str(x.lha)
+           # print "new hc = %s" %str(x.hc)
+           # print "new z = %s" %str(x.z)
+           # print "new p = %s" %str(x.p)
         count = count + 1
         location = locateMe(obs, count, location[0], location [1]) 
-    
-    h = Sextant(49.6083, 5.4)
+        altair1.writeInertial(inertialParams)
+        altair1.writeChanging(changingParams)
+
+        altair2.writeInertial(ip1) 
+        altair2.writeChanging(cp1) 
+
+        altair3.writeInertial(ip2) 
+        altair3.writeChanging(cp2) 
+
+    h = Sextant(29, 170)
     h.printAns()
+    altair1.printAns()
+    altair2.printAns()
+    altair3.printAns()
 # close the logfile
-f.close()
+dLog.close()
+inertialParams.close()
+changingParams.close()
+ip1.close()
+cp1.close()
+ip2.close()
+cp2.close()
