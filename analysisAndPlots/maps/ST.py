@@ -87,10 +87,10 @@ class Observation:
     # CNC = CelNavCamera.  PRETTY SWAG
     
     # shared among the rest of the instances of this object
-    fixDate = [2015, 10, 7]      # (year, month, date)
+    fixDate = [2015, 10, 7]      # (year, month, date) not used
     fixTime = [01, 41, 0]        # (hour, minute second)
-    v = 0                      # knots
-    track = 0                 # track heading in degrees
+    v = 0                      # knots dont edit bc we're statis
+    track = 0                 # track heading in degrees 
     lf = -70.934916                  # est. long, @ fixTime E+ W-, degrees
     bf = 43.13376                   # est. lat @ fixTime N+ S-, degrees    
     
@@ -114,7 +114,7 @@ class Observation:
         self.hourTea = self.calcHourTea()
         self.ghaA = self.interpGhaDec(self.ghAries0, self.ghAries1)
         self.gha = self.calcTrueGha()
-
+        fixTime = t
         # calculate this over again every iteration 
         # self.lng = self.calcLongLat(self.lf, self.bf)[0]
         # self.lat = self.calcLongLat(self.lf, self.bf)[1]

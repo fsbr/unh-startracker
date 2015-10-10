@@ -8,7 +8,7 @@ import time
 import os
 import re
 import glob
-
+import ST
 def extractTimeFromImage(img):
     img = Image.open(img)
     imgTime = img._getexif()
