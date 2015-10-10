@@ -17,6 +17,8 @@ from email.encoders import encode_noop
 
 from api_util import json2python, python2json
 
+photoData = open('photoData', 'w')
+
 class MalformedResponse(Exception):
     pass
 class RequestError(Exception):
@@ -225,6 +227,7 @@ class Client(object):
         stat = result.get('status')
         if stat == 'success':
             result = self.send_request('jobs/%s/calibration' % job_id)
+            photoData.write("%s\n"%result)
             print 'Calibration:', result
             result = self.send_request('jobs/%s/tags' % job_id)
             print 'Tags:', result
@@ -234,6 +237,7 @@ class Client(object):
             print 'Objects in field:', result
             result = self.send_request('jobs/%s/annotations' % job_id)
             print 'Annotations:', result
+            photoData.write(str(result))
             result = self.send_request('jobs/%s/info' % job_id)
             print 'Calibration:', result
 

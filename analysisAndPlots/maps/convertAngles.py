@@ -41,4 +41,5 @@ if __name__ == "__main__":
     print "altair dec %s"  %convertDec([08.0,52,05.9563])
     print "tarazed sha %s"  %raToSha([19,46,15.58029])
     print "tarazed dec %s" %convertDec([10,36,47.7408])
+    print "center ra to sha =%s" %raToSha([18,51,14.123])
 
