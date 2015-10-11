@@ -394,16 +394,14 @@ def runLocateMeALot(obs):
             if count == 10:
                 dLogFinalPoint.write("%s,%s,%s\n" %(location[0], location[1], location[2]))
 
-                dLog.close()
-                inertialParams.close()
-                changingParams.close()
-                ip1.close()
-                cp1.close()
-                ip2.close()
-                cp2.close()
-                dLogFinalPoint.close()
-                return location
-        
+	dLog.close()
+	inertialParams.close()
+	changingParams.close()
+	ip1.close()
+	cp1.close()
+	ip2.close()
+	cp2.close()
+	dLogFinalPoint.close()
 class Image:
     
     x = 25 

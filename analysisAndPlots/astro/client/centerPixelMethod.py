@@ -5,7 +5,13 @@ from __future__ import division
 from PIL import Image
 import client
 import time
+import sys
 import os
+
+# brittle code. need a way to do relative path idk why the relative path
+# isn't working 
+sys.path.append('/home/newmy/research/exp/unh-startracker/unh-startracker/analysisAndPlots/maps/')
+print sys.path
 import re
 import glob
 import ST
