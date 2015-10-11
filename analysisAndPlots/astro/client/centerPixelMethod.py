@@ -44,7 +44,7 @@ def getCalibrationAndStarList(image):
     while True: # look forever
         subId =  uploadedImage['subid']
         if subId == None:
-            time.sleep(0.5)
+            time.sleep(5)
         elif subId != None:
             break
     # print subId
@@ -58,17 +58,29 @@ def getCalibrationAndStarList(image):
                 print "jobId =============== %s" % jobId
                 break
         except:
-            time.sleep(0.5) 
+            time.sleep(5) 
             pass
 
     
     print" fuckkk %s" % blah 
     
     # this time.sleep call will need to be more bulletproof
-    time.sleep(10) 
+    time.sleep(60) 
     calibration = c.send_request('jobs/%s/calibration' % jobId)
     starList = c.send_request('jobs/%s/annotations' % jobId)
-    return [calibration, starList]
+    #while True:
+    #    try:
+    #        if calibration[''
+    #while True:
+     #   calibration = c.send_request('jobs/%s/calibration' % jobId)
+     #   starList = c.send_request('jobs/%s/annotations' % jobId)
+     #   try:
+     #       if exists(calibration['parity']):
+     #           return [calibration, starList]
+     #   except:
+     #       time.sleep(5)
+     #       pass
+
 
 # define center pixel constants, pitch calibration and stuff
 def computeHcFromImage(calibration, starList):
@@ -103,19 +115,24 @@ def computeHcFromImage(calibration, starList):
             star['hcu'] = pitch + star['yOff']*pixDegrees
             shortList.append(star)
             print star 
-
+    return star
 def doImageProcessing():
     imageList = populateImageList()
     print imageList 
     for image in imageList:
-        t = extractTimeFromImage(image)
-        print t
+        #t = extractTimeFromImage(image)
+        #print t
+        data = getCalibrationAndStarList(image)
+        cal = data[0]
+        sl = data[1]
+        computeHcFromImage(cal,sl)
 
 if __name__ == "__main__":
     doImageProcessing()
-    #data = getCalibrationAndStarList(imageList)
-    #cal = data[0]
-    #sl = data[1]
-    #print "cal == %s" %cal
-   #print "sl == %s" %sl
-    # computeHcFromImage(calibration,starList) 
+#    imageList = populateImageList()
+#    data = getCalibrationAndStarList(imageList)
+#    cal = data[0]
+#    sl = data[1]
+#    print "cal == %s" %cal
+#    print "sl == %s" %sl
+#    computeHcFromImage(calibration,starList) 

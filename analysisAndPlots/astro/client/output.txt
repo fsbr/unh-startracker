@@ -1,0 +1,26 @@
+['/home/newmy/research/exp/unh-startracker/unh-startracker/analysisAndPlots/astro/client', '/usr/local/lib/python2.7/dist-packages/scikit_image-0.11.3-py2.7-linux-x86_64.egg', '/usr/local/lib/python2.7/dist-packages/networkx-1.10-py2.7.egg', '/usr/local/lib/python2.7/dist-packages/Cython-0.23-py2.7-linux-x86_64.egg', '/usr/local/lib/python2.7/dist-packages/pyfits-3.3-py2.7-linux-x86_64.egg', '/usr/lib/python2.7', '/usr/lib/python2.7/plat-x86_64-linux-gnu', '/usr/lib/python2.7/lib-tk', '/usr/lib/python2.7/lib-old', '/usr/lib/python2.7/lib-dynload', '/usr/local/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages', '/usr/lib/python2.7/dist-packages/PILcompat', '/usr/lib/python2.7/dist-packages/gst-0.10', '/usr/lib/python2.7/dist-packages/gtk-2.0', '/usr/lib/pymodules/python2.7', '/usr/lib/python2.7/dist-packages/ubuntu-sso-client', '/home/newmy/research/exp/unh-startracker/unh-startracker/analysisAndPlots/maps/']
+['./DSC_0060_NEF_embedded.jpg', './DSC_0059_NEF_embedded.jpg', './DSC_0058_NEF_embedded.jpg']
+Python: {'apikey': 'lmrqojqbcjrzxkzx'}
+Sending json: {"apikey": "lmrqojqbcjrzxkzx"}
+Sending to URL: http://nova.astrometry.net/api/login
+Sending form data: {'request-json': '{"apikey": "lmrqojqbcjrzxkzx"}'}
+Sending data: request-json=%7B%22apikey%22%3A+%22lmrqojqbcjrzxkzx%22%7D
+Got json: {"status": "success", "message": "authenticated user: ", "session": "fy020m67cmdpmquw4p9w4eerjr1jkfsa"}
+Got result: {'status': 'success', 'message': 'authenticated user: ', 'session': 'fy020m67cmdpmquw4p9w4eerjr1jkfsa'}
+Got status: success
+Got session: fy020m67cmdpmquw4p9w4eerjr1jkfsa
+Upload args: {'publicly_visible': 'y', 'allow_modifications': 'd', 'allow_commercial_use': 'd'}
+Python: {'publicly_visible': 'y', 'allow_modifications': 'd', 'session': 'fy020m67cmdpmquw4p9w4eerjr1jkfsa', 'allow_commercial_use': 'd'}
+Sending json: {"publicly_visible": "y", "allow_modifications": "d", "session": "fy020m67cmdpmquw4p9w4eerjr1jkfsa", "allow_commercial_use": "d"}
+Sending to URL: http://nova.astrometry.net/api/upload
+Got json: {"status": "success", "subid": 808305, "hash": "44d6f5d84cce91d7cdb6fc6d2dd2ce6f252b54cb"}
+Got result: {'status': 'success', 'subid': 808305, 'hash': '44d6f5d84cce91d7cdb6fc6d2dd2ce6f252b54cb'}
+Got status: success
+Python: {'session': 'fy020m67cmdpmquw4p9w4eerjr1jkfsa'}
+Sending json: {"session": "fy020m67cmdpmquw4p9w4eerjr1jkfsa"}
+Sending to URL: http://nova.astrometry.net/api/submissions/808305
+Sending form data: {'request-json': '{"session": "fy020m67cmdpmquw4p9w4eerjr1jkfsa"}'}
+Sending data: request-json=%7B%22session%22%3A+%22fy020m67cmdpmquw4p9w4eerjr1jkfsa%22%7D
+Got json: {"processing_started": "None", "job_calibrations": [], "jobs": [], "processing_finished": "None", "user": 5046, "user_images": []}
+Got result: {'processing_started': 'None', 'job_calibrations': [], 'jobs': [], 'processing_finished': 'None', 'user': 5046, 'user_images': []}
+Got status: None
