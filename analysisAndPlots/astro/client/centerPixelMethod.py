@@ -109,11 +109,10 @@ def getStarDictionary(wcsFile):
     starDict = json.loads(starDict)
     print "star dictionary == %s"%type(starDict)
     print starDict[0]
-    #return starDict
-def computeHcFromImage(calibration, starList):
-    rightAscension = calibration['ra']
-    declination = calibration['dec']
-    pixScale = calibration['pixscale'] # arcsec/pixel
+    return starDict
+
+def computeHcFromImage(starList):
+    pixScale = 24.15 # arcsec/pixel
     pixDegrees = pixScale/3600
 
     imageWidth = 3872 # pix
@@ -125,14 +124,14 @@ def computeHcFromImage(calibration, starList):
     pitch = 62.6 # deg
 
     # strip 'annotations'
-    starList = starList['annotations']
+    # starList = starList['annotations']
 
     shortList = [] # make a short list of the stars we're really interested in
     for star in starList:
 
         # if the star has an alternate name its probably big or bright or both
         if len(star['names'])>1:
-
+            print "son of a bitch basterd"
             # pixel offsets
             star['xOff'] = star['pixelx'] - xc
             star['yOff'] = yc - star['pixely']
@@ -143,23 +142,32 @@ def computeHcFromImage(calibration, starList):
             shortList.append(star)
             print star 
     return star
-def doImageProcessing():
-    imageList = populateImageList()
-    print imageList 
+
+def getStarDictionary():
+    # all i want to do is obtain the star dictionary from the image in this one
     for image in imageList:
         print image
         makeWcsFiles(image)
     wcsList = populateWcsList()
     #print "wcs list is %s" %wcsList
+    sl = []
     for wcs in wcsList:
-        aaa = getStarDictionary(wcs)
-        print aaa
+        sl.append(getStarDictionary(wcs))
+        
+    return sl
 
+def runCenterPixelMethod():
+    # what would go in __name __ == "__main__" so that way it can be easily 
+    # exported to another module if one day we need that
+    imageList = populateImageList()
+    
 
 if __name__ == "__main__":
+    imageList = populateImageList()
+    print imageList 
+    for image in imageList:
+        makeWcsFiles(image)
     
-     doImageProcessing()
-#    imageList = populateImageList()
 #    data = getCalibrationAndStarList(imageList)
 #    cal = data[0]
 #    sl = data[1]
