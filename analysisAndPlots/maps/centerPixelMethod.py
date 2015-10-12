@@ -5,7 +5,11 @@
  
 from __future__ import division
 from PIL import Image
-import client
+
+try:
+    import client
+except:
+    pass
 import time
 import sys
 import os
@@ -40,63 +44,64 @@ def grabWcsFile(image):
     filename = "%s.%s"%(filename[0], 'wcs')
     #print "filename === %s" %filename
     return filename 
+try:
+    def apiGetCalibrationAndStarList(image):
+        # UNUSED SINCE WE HAVE THE SOFTWARE LOCALLY NOW
+        apiKey = 'lmrqojqbcjrzxkzx'
+        c = client.Client()
+        c.login(apiKey) 
 
-def apiGetCalibrationAndStarList(image):
-    # UNUSED SINCE WE HAVE THE SOFTWARE LOCALLY NOW
-    apiKey = 'lmrqojqbcjrzxkzx'
-    c = client.Client()
-    c.login(apiKey) 
-
-    # the reason we set equal c.upload to a variable is because it returns a
-    # dictionary with the image id in it
-    uploadedImage = c.upload(image)
-    
-    #print "ul image == %s" %uploadedImage
-    # time.sleep(30)
-    # try to minimize 
-    while True: # look forever
-        subId =  uploadedImage['subid']
-        if subId == None:
-            time.sleep(5)
-        elif subId != None:
-            break
-    # print subId
-    while True:
-        blah = c.sub_status(subId, justdict=True) #NEED TO ACTIVATE THE JUSTDICT = TRUE FLAG 
-        try:
-            # print "blah =========== %s" %type(blah['jobs'][0])
-            if type(blah['jobs'][0]) == int:
-                print "TYEP OF blah =========== %s" %type(blah['jobs'])
-                jobId = blah['jobs'][0]
-                print "jobId =============== %s" % jobId
+        # the reason we set equal c.upload to a variable is because it returns a
+        # dictionary with the image id in it
+        uploadedImage = c.upload(image)
+        
+        #print "ul image == %s" %uploadedImage
+        # time.sleep(30)
+        # try to minimize 
+        while True: # look forever
+            subId =  uploadedImage['subid']
+            if subId == None:
+                time.sleep(5)
+            elif subId != None:
                 break
-        except:
-            time.sleep(5) 
-            pass
+        # print subId
+        while True:
+            blah = c.sub_status(subId, justdict=True) #NEED TO ACTIVATE THE JUSTDICT = TRUE FLAG 
+            try:
+                # print "blah =========== %s" %type(blah['jobs'][0])
+                if type(blah['jobs'][0]) == int:
+                    print "TYEP OF blah =========== %s" %type(blah['jobs'])
+                    jobId = blah['jobs'][0]
+                    print "jobId =============== %s" % jobId
+                    break
+            except:
+                time.sleep(5) 
+                pass
 
-    
-    print" fuckkk %s" % blah 
-    
-    # this time.sleep call will need to be more bulletproof
-    time.sleep(60) 
-    calibration = c.send_request('jobs/%s/calibration' % jobId)
-    starList = c.send_request('jobs/%s/annotations' % jobId)
-    #while True:
-    #    try:
-    #        if calibration[''
-    #while True:
-     #   calibration = c.send_request('jobs/%s/calibration' % jobId)
-     #   starList = c.send_request('jobs/%s/annotations' % jobId)
-     #   try:
-     #       if exists(calibration['parity']):
-     #           return [calibration, starList]
-     #   except:
-     #       time.sleep(5)
-     #       pass
+        
+        print" fuckkk %s" % blah 
+        
+        # this time.sleep call will need to be more bulletproof
+        time.sleep(60) 
+        calibration = c.send_request('jobs/%s/calibration' % jobId)
+        starList = c.send_request('jobs/%s/annotations' % jobId)
+        #while True:
+        #    try:
+        #        if calibration[''
+        #while True:
+         #   calibration = c.send_request('jobs/%s/calibration' % jobId)
+         #   starList = c.send_request('jobs/%s/annotations' % jobId)
+         #   try:
+         #       if exists(calibration['parity']):
+         #           return [calibration, starList]
+         #   except:
+         #       time.sleep(5)
+         #       pass
 
 
-# define center pixel constants, pitch calibration and stuff
-
+    # define center pixel constants, pitch calibration and stuff
+except:
+    pass
 def makeWcsFiles(image):
     # this function calls astrometry with certain options and puts a .wcs file
     # in the directory specified after '-D'
@@ -152,15 +157,6 @@ def computeHcFromImage(starList):
             # print "\n\n\n shortList \n\n\n" %shortList
     return shortList 
 
-#def getStarDictionary(wcs):
-    # all i want to do is obtain the star dictionary from the image in this one
-    #print "wcs list is %s" %wcsList
-#    sl = []
-#    for wcs in wcsList:
-#        sl.append(getStarDictionary(wcs))
-        
-#    return sl
-
 def runCenterPixelMethod():
     # what would go in __name __ == "__main__" so that way it can be easily 
     # exported to another module if one day we need that
@@ -171,16 +167,13 @@ def runCenterPixelMethod():
         wcsFile = grabWcsFile(image)
         print "wcsFile ========= %s " %wcsFile
         starList = getStarDict(wcsFile)
-        computeHcFromImage(starList)
+        shortList = computeHcFromImage(starList)
+    
+    
         # print "fuckkkinnnggggg starrrr rlisttttt ==== %s" %starList
         
 
 
 if __name__ == "__main__":
     runCenterPixelMethod()  
-#    data = getCalibrationAndStarList(imageList)
-#    cal = data[0]
-#    sl = data[1]
-#    print "cal == %s" %cal
-#    print "sl == %s" %sl
-#    computeHcFromImage(calibration,starList) 
+
