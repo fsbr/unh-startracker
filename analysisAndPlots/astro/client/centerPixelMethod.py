@@ -7,14 +7,16 @@ import client
 import time
 import sys
 import os
-
+import subprocess
+import json
 # brittle code. need a way to do relative path idk why the relative path
 # isn't working 
 sys.path.append('/home/newmy/research/exp/unh-startracker/unh-startracker/analysisAndPlots/maps/')
-print sys.path
+# print sys.path
 import re
 import glob
 import ST
+
 def extractTimeFromImage(img):
     img = Image.open(img)
     imgTime = img._getexif()
@@ -29,7 +31,11 @@ def populateImageList():
     imageList = glob.glob('./*.jpg')
     return imageList
 
-def getCalibrationAndStarList(image):
+def populateWcsList():
+    wcsList = glob.glob('./*.wcs')
+    return wcsList
+
+def apiGetCalibrationAndStarList(image):
     apiKey = 'lmrqojqbcjrzxkzx'
     c = client.Client()
     c.login(apiKey) 
@@ -83,6 +89,27 @@ def getCalibrationAndStarList(image):
 
 
 # define center pixel constants, pitch calibration and stuff
+
+def makeWcsFiles(image):
+    # this function calls astrometry with certain options and puts a .wcs file
+    # in the directory specified after '-D'
+    subprocess.call(['solve-field', '-p', '--overwrite', '--scale-units',
+                    'degwidth', '--scale-low', '25', '--scale-high', '35',
+                    '--downsample', '2', '-D', '.', image])
+
+def getStarDictionary(wcsFile):
+    # start a star dictionary object (kind of)
+    command = ['/usr/local/astrometry/bin/plotann.py', '--brightcat','/home/newmy/research/exp/unh-startracker/astrometry.net-0.50/catalogs/brightstars.fits', 'DSC_0058_NEF_embedded.wcs']#%wcsFile
+    print 'command is %s' %command
+    sdProc = subprocess.Popen(command, stdout=subprocess.PIPE)
+    #sdProc = os.popen(command).read() 
+    starDict = sdProc.stdout.read()
+    
+    # put the dictionary in dictionary (instead of string) form
+    starDict = json.loads(starDict)
+    print "star dictionary == %s"%type(starDict)
+    print starDict[0]
+    #return starDict
 def computeHcFromImage(calibration, starList):
     rightAscension = calibration['ra']
     declination = calibration['dec']
@@ -120,15 +147,18 @@ def doImageProcessing():
     imageList = populateImageList()
     print imageList 
     for image in imageList:
-        #t = extractTimeFromImage(image)
-        #print t
-        data = getCalibrationAndStarList(image)
-        cal = data[0]
-        sl = data[1]
-        computeHcFromImage(cal,sl)
+        print image
+        makeWcsFiles(image)
+    wcsList = populateWcsList()
+    #print "wcs list is %s" %wcsList
+    for wcs in wcsList:
+        aaa = getStarDictionary(wcs)
+        print aaa
+
 
 if __name__ == "__main__":
-    doImageProcessing()
+    
+     doImageProcessing()
 #    imageList = populateImageList()
 #    data = getCalibrationAndStarList(imageList)
 #    cal = data[0]
