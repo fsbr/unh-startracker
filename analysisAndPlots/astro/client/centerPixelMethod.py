@@ -114,7 +114,7 @@ def getStarDict(wcsFile):
     # put the dictionary in dictionary (instead of string) form
     starDict = json.loads(starDict)
     print "star dictionary == %s"%type(starDict)
-    print starDict[0]
+    print starDict
     return starDict
 
 def computeHcFromImage(starList):
@@ -169,7 +169,7 @@ def runCenterPixelMethod():
         wcsFile = grabWcsFile(image)
         print "wcsFile ========= %s " %wcsFile
         starList = getStarDict(wcsFile)
-        # computeHcFromImage(starList)
+        computeHcFromImage(starList)
         # print "fuckkkinnnggggg starrrr rlisttttt ==== %s" %starList
         
 
