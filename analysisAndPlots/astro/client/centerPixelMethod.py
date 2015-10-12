@@ -31,11 +31,16 @@ def populateImageList():
     imageList = glob.glob('./*.jpg')
     return imageList
 
-def populateWcsList():
-    wcsList = glob.glob('./*.wcs')
-    return wcsList
+def grabWcsFile(image):
+    # i think what i really want is to return a string of the wcs file
+    filename = os.path.basename(image)
+    filename = os.path.splitext(filename)
+    filename = "%s.%s"%(filename[0], 'wcs')
+    #print "filename === %s" %filename
+    return filename 
 
 def apiGetCalibrationAndStarList(image):
+    # UNUSED SINCE WE HAVE THE SOFTWARE LOCALLY NOW
     apiKey = 'lmrqojqbcjrzxkzx'
     c = client.Client()
     c.login(apiKey) 
@@ -97,9 +102,10 @@ def makeWcsFiles(image):
                     'degwidth', '--scale-low', '25', '--scale-high', '35',
                     '--downsample', '2', '-D', '.', image])
 
-def getStarDictionary(wcsFile):
+def getStarDict(wcsFile):
     # start a star dictionary object (kind of)
-    command = ['/usr/local/astrometry/bin/plotann.py', '--brightcat','/home/newmy/research/exp/unh-startracker/astrometry.net-0.50/catalogs/brightstars.fits', 'DSC_0058_NEF_embedded.wcs']#%wcsFile
+    wcsString = '%s'%wcsFile
+    command = ['/usr/local/astrometry/bin/plotann.py', '--brightcat','/home/newmy/research/exp/unh-startracker/astrometry.net-0.50/catalogs/brightstars.fits', wcsString]
     print 'command is %s' %command
     sdProc = subprocess.Popen(command, stdout=subprocess.PIPE)
     #sdProc = os.popen(command).read() 
@@ -141,33 +147,35 @@ def computeHcFromImage(starList):
             star['hcu'] = pitch + star['yOff']*pixDegrees
             shortList.append(star)
             print star 
-    return star
+            # print "\n\n\n shortList \n\n\n" %shortList
+    return shortList 
 
-def getStarDictionary():
+#def getStarDictionary(wcs):
     # all i want to do is obtain the star dictionary from the image in this one
-    for image in imageList:
-        print image
-        makeWcsFiles(image)
-    wcsList = populateWcsList()
     #print "wcs list is %s" %wcsList
-    sl = []
-    for wcs in wcsList:
-        sl.append(getStarDictionary(wcs))
+#    sl = []
+#    for wcs in wcsList:
+#        sl.append(getStarDictionary(wcs))
         
-    return sl
+#    return sl
 
 def runCenterPixelMethod():
     # what would go in __name __ == "__main__" so that way it can be easily 
     # exported to another module if one day we need that
     imageList = populateImageList()
-    
-
-if __name__ == "__main__":
-    imageList = populateImageList()
     print imageList 
     for image in imageList:
         makeWcsFiles(image)
-    
+        wcsFile = grabWcsFile(image)
+        print "wcsFile ========= %s " %wcsFile
+        starList = getStarDict(wcsFile)
+        # computeHcFromImage(starList)
+        # print "fuckkkinnnggggg starrrr rlisttttt ==== %s" %starList
+        
+
+
+if __name__ == "__main__":
+    runCenterPixelMethod()  
 #    data = getCalibrationAndStarList(imageList)
 #    cal = data[0]
 #    sl = data[1]
