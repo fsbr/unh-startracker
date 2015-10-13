@@ -137,7 +137,7 @@ def computeHoFromImage(starList):
     yc = imageHeight/2
 
     #PITCH CALIBRATION SUPER IMPORTANT
-    pitch = 62.6 # deg
+    pitch =62.62 #deg 
 
     # strip 'annotations'
     # starList = starList['annotations']
@@ -147,14 +147,13 @@ def computeHoFromImage(starList):
 
         # if the star has an alternate name its probably big or bright or both
         if len(star['names'])>1:
-            print "son of a bitch basterd"
             # pixel offsets
             star['xOff'] = star['pixelx'] - xc
             star['yOff'] = yc - star['pixely']
             # rotation will go here
 
             # Hc (unrolled)
-            star['hcu'] = pitch + star['yOff']*pixDegrees
+            star['ho'] = pitch + star['yOff']*pixDegrees # i feel like its plus and the matlab is actually whats wrong
             shortList.append(star)
             print star 
             # print "\n\n\n shortList \n\n\n" %shortList
@@ -169,7 +168,7 @@ def runSTpy(shortList,time):
         starName = shortList[x]['names'][1] 
         if starName  == 'Vega':
             shortList[x]['sha'] = [80, 47.02134]
-            shortList[x]['dec'] = [38, 0.1234] 
+            shortList[x]['dec'] = [38, 47.1234] 
             shorterList.append(shortList[x])
         elif starName == 'Sheliak':
             shortList[x]['sha'] = [77, 28.8012]
@@ -186,9 +185,9 @@ def runSTpy(shortList,time):
     observations = []
     for x in shorterList:
         # have to define the gha as constants for now
-        gha0 = [17,17.8]
-        gha1 = [32, 20.3]
-        Ho = x['hcu']
+        gha0 = [30,22.0]
+        gha1 = [45, 24.4]
+        Ho = x['ho']
         sha = x['sha']
         dec = x['dec']
         observations.append(ST.Observation(time,Ho, sha, gha0, gha1, dec))

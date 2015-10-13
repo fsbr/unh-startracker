@@ -170,8 +170,8 @@ class Observation:
 
     def calcLongLat(self, longEst, latEst):
 #        print "calcLongLat"
-        print "longEst is %s" %longEst
-        print "latEst is %s" %latEst
+#        print "longEst is %s" %longEst
+#        print "latEst is %s" %latEst
         # calculates the estimate of lat and long based on the running track
         # of the vessel
 
@@ -354,7 +354,7 @@ def locateMe(obs, count, newLong, newLat):
     #print "n lat off == %s" %str(newLatOffset)
 
     d = 60*m.sqrt((newLong-oldLong)**2*cosd(oldLat)**2 + (newLat - oldLat)**2)
-    print  "d == %s" %str(d)
+#    print  "d == %s" %str(d)
     dLog.write("%s\n" %d)
     
     return [newLong, newLat, d]
@@ -397,15 +397,15 @@ def runLocateMeALot(obs):
                 dLogFinalPoint.write("%s,%s,%s\n" %(location[0], location[1], location[2]))
                 analysis.write("%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(hoiList[0],hoiList[1],hoiList[2],hciList[0],hciList[1],hciList[2],location[0],location[1],location[2]))
                 # having the closes here means that ST.py won't run standalone anymore
-                dLog.close()
-                inertialParams.close()
-                changingParams.close()
-                ip1.close()
-                cp1.close()
-                ip2.close()
-                cp2.close()
+                #dLog.close()
+                #inertialParams.close()
+                #changingParams.close()
+                #ip1.close()
+                #cp1.close()
+                #ip2.close()
+                #cp2.close()
                 
-                dLogFinalPoint.close()
+                #dLogFinalPoint.close()
                 return location
         
 class Image:
@@ -489,7 +489,13 @@ if __name__ == "__main__":
                                 [45, 24.4], [33,21.7601])
         vega2 = Observation([01, 9,9], 64.7062-5.801, [80, 47.02134], [30, 22.0],
                                 [45, 24.4], [38, 47.01234])
-    
+
+        sulafat = Observation([01,9,9], 63.875971, [75, 15.8444], [30,22.0],
+                                [45, 24.4], [32, 41.3734])
+        sheliak = Observation([01, 9, 9], 62.54974, [77.0, 28.8012], [30, 22.0],
+                                [45, 24.4], [33,21.7601])
+        vega2 = Observation([01, 9,9], 62.89237, [80, 47.02134], [30, 22.0],
+                                [45, 24.4], [38, 47.01234])
         t = [0,53,13]
         ghaZero = [16,18.7]
         ghaOne = [31, 21.1]
