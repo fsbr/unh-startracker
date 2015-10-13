@@ -23,8 +23,9 @@ import re
 import glob
 import ST
 
-dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9/'
-dataDir = './'
+dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9_second/'
+print "ATTEMPTING TO ACCESS DATA DIR %s" %dataDir
+# dataDir = './'
 def extractTimeFromImage(img):
     img = Image.open(img)
     imgTime = img._getexif()
@@ -187,8 +188,10 @@ def runSTpy(shortList,time):
     observations = []
     for x in shorterList:
         # have to define the gha as constants for now
-        gha0 = [17,17.8]
-        gha1 = [32, 20.3]
+        #gha0 = [17,17.8]
+        #gha1 = [32, 20.3]
+        gha0 = [32, 20.3]
+        gha1 = [47, 33.7]
         Ho = x['ho']
         sha = x['sha']
         dec = x['dec']

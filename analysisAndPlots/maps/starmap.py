@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 def findMean(aList):
     return sum(aList)/len(aList)
 
-csvFiles = ['durham_1deg.csv', 'arcTen2.csv']
-with open('aquila_corrected.csv', 'rb') as f:
+csvFiles = ['lyra_oct9.csv', 'arcTen2.csv']
+with open('lyra_oct9.csv', 'rb') as f:
     reader = csv.reader(f)
     longLats = list(reader)
 
