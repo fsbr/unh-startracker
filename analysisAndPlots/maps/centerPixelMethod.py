@@ -23,6 +23,7 @@ import re
 import glob
 import ST
 
+dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9'
 
 def extractTimeFromImage(img):
     img = Image.open(img)
@@ -185,8 +186,8 @@ def runSTpy(shortList,time):
     observations = []
     for x in shorterList:
         # have to define the gha as constants for now
-        gha0 = [30,22.0]
-        gha1 = [45, 24.4]
+        gha0 = [17,17.8]
+        gha1 = [32, 20.3]
         Ho = x['ho']
         sha = x['sha']
         dec = x['dec']

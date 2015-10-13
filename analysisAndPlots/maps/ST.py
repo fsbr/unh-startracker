@@ -374,8 +374,8 @@ def runLocateMeALot(obs):
             hci = x.writeChanging(changingParams)
             hoiList.append(hoi)
             hciList.append(hci)
-        print hoiList
-        print hciList
+        print "hoilist =%s"%hoiList
+        print "hciList=%s"%hciList
 
         # iterate the algorithm 10x
         while count < 10:
