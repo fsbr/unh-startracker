@@ -37,6 +37,7 @@ ip2 = open('inertials2', 'w')
 cp2 = open('changes2', 'w')
 
 analysis = open('analysis.csv', 'w')
+inertials = open('trueInertials.csv', 'w')
 # to test this we're goign to use "regulus" to calculate the location
 
 class Sextant:
@@ -130,6 +131,7 @@ class Observation:
 
     def convertAngle(self, angle):
         # converts an angle from angle + minutes from the almanac to decimal
+        # not gonna lie this looks whack.  --future self
         if angle[0] < 0:
             ang = -1*(abs(angle[0]) + angle[1]/60)
         else:
@@ -280,7 +282,8 @@ class Observation:
             writeInertial(x)
             writeChanging(x)
             
-
+    def writeDebug(self, fileName):
+        inertials.write("%s,%s,%s\n"%(self.lha, self.gha, self.increment))
     
 def locateMe(obs, count, newLong, newLat):
     # this function will locate me based on the three observations
@@ -392,7 +395,7 @@ def runLocateMeALot(obs):
             for x in obs:
                 x.writeInertial(inertialParams)
                 x.writeChanging(changingParams)
-
+                x.writeDebug(inertials)
             if count == 10:
                 dLogFinalPoint.write("%s,%s,%s\n" %(location[0], location[1], location[2]))
                 analysis.write("%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(hoiList[0],hoiList[1],hoiList[2],hciList[0],hciList[1],hciList[2],location[0],location[1],location[2]))
