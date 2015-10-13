@@ -35,6 +35,8 @@ cp1 = open('changes1', 'w')
 
 ip2 = open('inertials2', 'w')
 cp2 = open('changes2', 'w')
+
+analysis = open('analysis.csv', 'w')
 # to test this we're goign to use "regulus" to calculate the location
 
 class Sextant:
@@ -167,7 +169,7 @@ class Observation:
         return output
 
     def calcLongLat(self, longEst, latEst):
-        print "calcLongLat"
+#        print "calcLongLat"
         print "longEst is %s" %longEst
         print "latEst is %s" %latEst
         # calculates the estimate of lat and long based on the running track
@@ -259,6 +261,8 @@ class Observation:
         fileName.write('gha == %s\n' %(self.gha))
         fileName.write('dec == %s\n' %(self.dec))
         fileName.write('\n\n\n')
+        return self.ho
+    
     
     def writeChanging(self,fileName):
         
@@ -269,6 +273,7 @@ class Observation:
         fileName.write('z == %s\n' %(self.z))
         fileName.write('p == %s\n' %(self.p))
         fileName.write('\n\n\n')
+        return self.hc
 
     def writeAll(self, inertialList, changingList):
         for x in fileList:
@@ -362,14 +367,15 @@ def runLocateMeALot(obs):
 
         location = locateMe(obs, count,0,0)
         # print "location is %s" %str(location)
-        obs[0].writeInertial(inertialParams) 
-        obs[0].writeChanging(changingParams) 
-
-        obs[1].writeInertial(ip1) 
-        obs[1].writeChanging(cp1) 
-
-        obs[2].writeInertial(ip2) 
-        obs[2].writeChanging(cp2) 
+        hoiList = []
+        hciList = []
+        for x in obs:
+            hoi = x.writeInertial(inertialParams)
+            hci = x.writeChanging(changingParams)
+            hoiList.append(hoi)
+            hciList.append(hci)
+        print hoiList
+        print hciList
 
         # iterate the algorithm 10x
         while count < 10:
@@ -383,17 +389,14 @@ def runLocateMeALot(obs):
                # print "new p = %s" %str(x.p)
             count = count + 1
             location = locateMe(obs, count, location[0], location [1]) 
-            obs[0].writeInertial(inertialParams)
-            obs[0].writeChanging(changingParams)
+            for x in obs:
+                x.writeInertial(inertialParams)
+                x.writeChanging(changingParams)
 
-            obs[1].writeInertial(ip1) 
-            obs[1].writeChanging(cp1) 
-
-            obs[2].writeInertial(ip2) 
-            obs[2].writeChanging(cp2) 
             if count == 10:
                 dLogFinalPoint.write("%s,%s,%s\n" %(location[0], location[1], location[2]))
-
+                analysis.write("%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(hoiList[0],hoiList[1],hoiList[2],hciList[0],hciList[1],hciList[2],location[0],location[1],location[2]))
+                # having the closes here means that ST.py won't run standalone anymore
                 dLog.close()
                 inertialParams.close()
                 changingParams.close()
@@ -401,6 +404,7 @@ def runLocateMeALot(obs):
                 cp1.close()
                 ip2.close()
                 cp2.close()
+                
                 dLogFinalPoint.close()
                 return location
         
