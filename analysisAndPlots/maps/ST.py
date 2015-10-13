@@ -515,7 +515,8 @@ if __name__ == "__main__":
         #obs = [regulus, antares, kochab]
         # obs = [altair1, altair2, altair3]
         # obs = [deneb, vega, altair] # summer Triangle bitches
-        obs = [alshain, altair2, tarazed]
+        # obs = [alshain, altair2, tarazed]
+        obs = [sulafat, sheliak, vega2]
 	runLocateMeALot(obs)
         # obs = [deneb, gienah, sadr]
         #inertialList = [inertialParams, ip1, ip2]

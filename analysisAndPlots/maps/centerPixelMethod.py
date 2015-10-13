@@ -23,6 +23,7 @@ import re
 import glob
 import ST
 
+
 def extractTimeFromImage(img):
     img = Image.open(img)
     imgTime = img._getexif()
@@ -44,6 +45,7 @@ def grabWcsFile(image):
     filename = "%s.%s"%(filename[0], 'wcs')
     #print "filename === %s" %filename
     return filename 
+
 try:
     def apiGetCalibrationAndStarList(image):
         # UNUSED SINCE WE HAVE THE SOFTWARE LOCALLY NOW
@@ -102,6 +104,7 @@ try:
     # define center pixel constants, pitch calibration and stuff
 except:
     pass
+
 def makeWcsFiles(image):
     # this function calls astrometry with certain options and puts a .wcs file
     # in the directory specified after '-D'
@@ -124,7 +127,7 @@ def getStarDict(wcsFile):
     print starDict
     return starDict
 
-def computeHcFromImage(starList):
+def computeHoFromImage(starList):
     pixScale = 24.15 # arcsec/pixel
     pixDegrees = pixScale/3600
 
@@ -157,6 +160,45 @@ def computeHcFromImage(starList):
             # print "\n\n\n shortList \n\n\n" %shortList
     return shortList 
 
+def runSTpy(shortList,time):
+    # this function runs ST.py with the values from three stars from the "short List"
+    # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
+    shorterList = []
+    for x in range(0, len(shortList)):
+        print shortList[x]['names'][1]
+        starName = shortList[x]['names'][1] 
+        if starName  == 'Vega':
+            shortList[x]['sha'] = [80, 47.02134]
+            shortList[x]['dec'] = [38, 0.1234] 
+            shorterList.append(shortList[x])
+        elif starName == 'Sheliak':
+            shortList[x]['sha'] = [77, 28.8012]
+            shortList[x]['dec'] = [33, 21.7601] 
+           
+            shorterList.append(shortList[x])
+        elif starName == 'Sulafat':
+            shortList[x]['sha'] = [75, 15.8444]
+            shortList[x]['dec'] = [32, 41.3734] 
+            shorterList.append(shortList[x])
+        else:
+            pass
+    print "actually used observations are ===== %s" %shorterList
+    observations = []
+    for x in shorterList:
+        # have to define the gha as constants for now
+        gha0 = [17,17.8]
+        gha1 = [32, 20.3]
+        Ho = x['hcu']
+        sha = x['sha']
+        dec = x['dec']
+        observations.append(ST.Observation(time,Ho, sha, gha0, gha1, dec))
+    print "OBSERVATIONS ====== %s"%observations
+    ST.runLocateMeALot(observations)
+    # i think here we need to put in an observation
+     
+            
+        #    print "vegaaaaaaaaaa =====%s"%shortList[x]
+
 def runCenterPixelMethod():
     # what would go in __name __ == "__main__" so that way it can be easily 
     # exported to another module if one day we need that
@@ -164,12 +206,12 @@ def runCenterPixelMethod():
     print imageList 
     for image in imageList:
         makeWcsFiles(image)
+        time = extractTimeFromImage(image)
         wcsFile = grabWcsFile(image)
         print "wcsFile ========= %s " %wcsFile
         starList = getStarDict(wcsFile)
-        shortList = computeHcFromImage(starList)
-    
-    
+        shortList = computeHoFromImage(starList)
+        runSTpy(shortList, time)  
         # print "fuckkkinnnggggg starrrr rlisttttt ==== %s" %starList
         
 
