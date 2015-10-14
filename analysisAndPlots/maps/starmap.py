@@ -12,7 +12,7 @@ def findMean(aList):
     return sum(aList)/len(aList)
 
 csvFiles = ['lyra_oct9.csv', 'arcTen2.csv']
-with open('lyra_oct9.csv', 'rb') as f:
+with open('lyra_oct9raw.csv', 'rb') as f:
     reader = csv.reader(f)
     longLats = list(reader)
 

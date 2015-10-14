@@ -23,7 +23,7 @@ import re
 import glob
 import ST
 
-dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9_second/'
+dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/test/'
 print "ATTEMPTING TO ACCESS DATA DIR %s" %dataDir
 # dataDir = './'
 def extractTimeFromImage(img):
@@ -138,10 +138,11 @@ def computeHoFromImage(starList):
     imageHeight = 2592 # pix
     xc = imageWidth/2
     yc = imageHeight/2
+    naturalBias = -5.25 #calc from lyra_oct9
 
     #PITCH CALIBRATION SUPER IMPORTANT
     pitch =62.62 #deg 
-
+    roll = -2.4#-0.54 
     # strip 'annotations'
     # starList = starList['annotations']
 
@@ -154,17 +155,18 @@ def computeHoFromImage(starList):
             star['xOff'] = star['pixelx'] - xc
             star['yOff'] = yc - star['pixely']
             # rotation will go here
-
-            # Hc (unrolled)
-            star['ho'] = pitch + star['yOff']*pixDegrees # i feel like its plus and the matlab is actually whats wrong
+            # compute offset from roll angle
+            yR = star['xOff']*ST.sind(roll) + star['yOff']*ST.cosd(roll)
+            star['ho'] = pitch + yR*pixDegrees + naturalBias # i feel like its plus and the matlab is actually whats wrong
             shortList.append(star)
             print star 
             # print "\n\n\n shortList \n\n\n" %shortList
     return shortList 
 
-def runSTpy(shortList,time):
+def runSTpy(shortList,t0):
     # this function runs ST.py with the values from three stars from the "short List"
     # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
+    t0[2] = t0[2] + 4
     shorterList = []
     for x in range(0, len(shortList)):
         print shortList[x]['names'][1]
@@ -195,7 +197,7 @@ def runSTpy(shortList,time):
         Ho = x['ho']
         sha = x['sha']
         dec = x['dec']
-        observations.append(ST.Observation(time,Ho, sha, gha0, gha1, dec))
+        observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec))
     print "OBSERVATIONS ====== %s"%observations
     ST.runLocateMeALot(observations)
     # i think here we need to put in an observation
@@ -211,13 +213,16 @@ def runCenterPixelMethod():
     for image in imageList:
         # produce the initial wcs file
         makeWcsFiles(image)
-        time = extractTimeFromImage(image)
+        t0 = extractTimeFromImage(image)
         wcsFile = grabWcsFile(image)
         print "wcsFile ========= %s " %wcsFile
         starList = getStarDict(wcsFile)
         shortList = computeHoFromImage(starList)
-        runSTpy(shortList, time)  
+        runSTpy(shortList, t0)  
         # print "fuckkkinnnggggg starrrr rlisttttt ==== %s" %starList
+
+    subprocess.call(['mv', 'analysis.csv', dataDir])
+    subprocess.call(['mv', 'trueInertials.csv', dataDir])
         
 
 

@@ -186,14 +186,14 @@ class Observation:
     def calcTrueGha(self):
         # calculates the true GHA of the observation
         # trueGha = (ghaAries + sha)%360. returns the smallest equiv angle
-        return (self.ghaA + self.sha)%360
+        return (self.ghaA + self.sha)#%360 # not sure how i feel about the mod operator
 
 
     def calcLha(self, longEst):
         # calculates the local hour angle
         # lha = (gha + long)%360
         
-        return (self.gha + longEst)%360 
+        return (self.gha + longEst)#%360 
 
     def calcHcAz(self,latEst):
         # calculates s, c, and altitude Hc 
@@ -502,7 +502,7 @@ if __name__ == "__main__":
         t = [0,53,13]
         ghaZero = [16,18.7]
         ghaOne = [31, 21.1]
-        meanBias = 5.356 # total amount of diff. i need to get out of my system
+        meanBias =2 #5.356 # total amount of diff. i need to get out of my system
         accounted = 2.7 # stuff i've actually been able to account for so far
         dt = -2
         alshain = Observation([0,53, 13+dt], 54.6041 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
@@ -524,8 +524,8 @@ if __name__ == "__main__":
         #obs = [regulus, antares, kochab]
         # obs = [altair1, altair2, altair3]
         # obs = [deneb, vega, altair] # summer Triangle bitches
-        # obs = [alshain, altair2, tarazed]
-        obs = [sulafat, sheliak, vega2]
+        obs = [alshain, altair2, tarazed]
+        #obs = [sulafat, sheliak, vega2]
 	runLocateMeALot(obs)
         # obs = [deneb, gienah, sadr]
         #inertialList = [inertialParams, ip1, ip2]
