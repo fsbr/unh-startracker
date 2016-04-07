@@ -30,10 +30,36 @@ altair123 = [1365.11315586,
 1.06229300396e-12,
 ]
 
+aat = [197.787351609,
+3.4464925083,
+0.00482188408081,
+2.10085848187e-06,
+1.84057493076e-09,
+1.55591945723e-12,
+5.95583405663e-12,
+5.69053151442e-12,
+6.00065516672e-12,
+1.55591945723e-12,
+9.3355167434e-12]
+summer = [70.9088370557,
+2.19852657583,
+0.222340666489,
+0.0225657651211,
+0.00228740718144,
+0.000231814957113,
+2.34925358833e-05,
+2.38076873192e-06,
+2.41270846225e-07,
+2.4450926121e-08,
+2.47635212249e-09]
+
 pl.figure()
-pl.plot(data)
-pl.plot(altair123)
-pl.ylabel('estimated position delta')
+na = pl.plot(data,label="Nautical Almanac Example")
+a3 = pl.plot(altair123, label="Altair Sighted 3 Times")
+aS = pl.plot(aat, label="Altair Sighted with Other Stars")
+sT = pl.plot(summer, label="Summer Triangle Simulated")
+pl.ylabel('estimated position delta (nm)')
 pl.xlabel('iteration number')
 pl.title('Convergence of Nautical Star Tracker Location')
+pl.legend()
 pl.show()

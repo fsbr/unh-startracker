@@ -42,4 +42,13 @@ if __name__ == "__main__":
     print "tarazed sha %s"  %raToSha([19,46,15.58029])
     print "tarazed dec %s" %convertDec([10,36,47.7408])
     print "center ra to sha =%s" %raToSha([18,51,14.123])
+    
+    print "15aql sha %s"  %raToSha([19, 04, 57.67233])
+    print "15aql dec %s"  %convertDec([-04, 1, 53.1059])
+    print "L aql sha %s"  %raToSha([19, 06, 14.93898])
+    print "L aql dec %s"  %convertDec([-04, 52, 57.2007])
+    print "Ayla sha %s"  %raToSha([18, 56, 13.2])
+    print "Ayla dec %s" %convertDec([04, 12, 13])
+    print "14aql sha %s"  %raToSha([19, 02, 54.499])
+    print "14aql dec %s" %convertDec([-03, 41, 56.3561])
 

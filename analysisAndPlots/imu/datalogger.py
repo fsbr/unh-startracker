@@ -1,12 +1,16 @@
 # logs the YPR angles from the IMU and the UTC time
 # tckf sept - 2015
 
+# this is one of the worst scripts ive ever written. 14-oct-2015
+
 from __future__ import division
 import serial
 import time
 import datetime
 
 f = open('pitch_test', 'w')
+e = open('roll_test', 'w')
+t = open('timedoc','w')
 ser = serial.Serial('/dev/ttyUSB0', baudrate = 57600)
 # ser.write('#ot')
 time.sleep(1)
@@ -31,10 +35,13 @@ def readPitchData():
             # print type(float(data[2][0]))
             # f.write(str(data))
             pitch = data[0][2]
+            roll = data[0][3]
             pitch = float(pitch)
+            roll = float(roll)
             # f.write(" " + str(data) + "  " + str(datetime.datetime.utcnow()))
+            f.write(pitch)
             print pitch
-            return pitch 
+            return [pitch,roll] 
     except:
         pass
 
@@ -44,13 +51,14 @@ def calcBias():
 
     array = []
     count = 0
-    while count<10000:
+    while count<100:
         pitch = readPitchData()
         if pitch == None:
             pass
         elif pitch != None:
             # array.append(pitch)
-            f.write(str(pitch) + ",\n")
+            f.write(str(pitch[0]) + ",\n")
+            e.write(str(pitch[1])+ ",\n")
             count = count + 1
         else:
             # nothing happens
@@ -65,11 +73,16 @@ def calcBias():
     
 if __name__ == "__main__":
     # calculate the offset for the neutral position
-    bias = calcBias() 
+    # bias = calcBias() 
     # print bias
-    count = 0
-    while count < 100:
+    gcount = 0
+    ti = datetime.datetime.now().time()
+    while gcount < 1000:
         # print pitch
         pitch = readPitchData()
-        # f.write(str(pitch) + "\n")
-        count = count +1
+        f.write(str(pitch) + "\n")
+        gcount = gcount +1
+    tf = datetime.datetime.now().time()
+    t.write(str(ti)+ "\n")
+    t.write(str(tf)+ "\n")
+    f.close()

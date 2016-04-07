@@ -1,9 +1,12 @@
 #
 from PIL import Image, ImageDraw
-image = Image.open('DSC_0031_NEF_embedded.jpg')
+image = Image.open('figimage.jpg')
 draw = ImageDraw.Draw(image)
-r = 18 
+
+# change this when the calibration vs. when you're making hte thesis figure
+r = 1450/2
 x = 1936
 y = 1296
 draw.ellipse((x-r, y-r, x+r, y+r))
+image.save('maxradius.png')
 image.show()

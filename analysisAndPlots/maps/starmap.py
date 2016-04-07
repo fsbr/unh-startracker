@@ -11,8 +11,8 @@ import matplotlib.pyplot as plt
 def findMean(aList):
     return sum(aList)/len(aList)
 
-csvFiles = ['lyra_oct9.csv', 'arcTen2.csv']
-with open('lyra_oct9raw.csv', 'rb') as f:
+csvFiles = ['.csv', 'arcTen2.csv']
+with open('dLogFinalPoint', 'rb') as f:
     reader = csv.reader(f)
     longLats = list(reader)
 
@@ -122,6 +122,8 @@ my_map.drawparallels(np.arange(-90, 90, 30))
 
 x,y = my_map(lons, lats)
 xO,yO = my_map(oLons, oLats)
+tvx, tvy = my_map(-70.9349, 43.1337)
+my_map.plot(tvx,tvy, 'co', markersize=5)
 my_map.plot(x,y, 'bo', markersize =5)
-my_map.plot(xO,yO, 'ro', markersize=5)
+#my_map.plot(xO,yO, 'ro', markersize=5)
 plt.show()

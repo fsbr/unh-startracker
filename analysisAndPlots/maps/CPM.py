@@ -23,9 +23,9 @@ import re
 import glob
 import ST
 
-dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/test/'
+#dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/test/'
+dataDir = './../'
 print "ATTEMPTING TO ACCESS DATA DIR %s" %dataDir
-# dataDir = './'
 def extractTimeFromImage(img):
     img = Image.open(img)
     imgTime = img._getexif()
@@ -131,61 +131,67 @@ def getStarDict(wcsFile):
     return starDict
 
 def computeHoFromImage(starList):
-    pixScale = 24.15 # arcsec/pixel
+
+    # the leading theory is that this approximation will only work when the stars are closeby
+    # that is, the small angle approximation works
+    pixScale = 24.1#5 # arcsec/pixel
     pixDegrees = pixScale/3600
 
     imageWidth = 3872 # pix
     imageHeight = 2592 # pix
     xc = imageWidth/2
     yc = imageHeight/2
-    naturalBias = -5.25 #calc from lyra_oct9
+    naturalBias =-11.0701857994#-5.25 #calc from lyra_oct9
 
     #PITCH CALIBRATION SUPER IMPORTANT
-    pitch =62.62 #deg 
-    roll = -2.4#-0.54 
+    pitch =  39.76#62.62 #deg 
+    roll =1.9 #-0.32-1.9056-3.19+4444#-0.5 # -2.4#-0.54 
     # strip 'annotations'
     # starList = starList['annotations']
 
     shortList = [] # make a short list of the stars we're really interested in
     for star in starList:
-
         # if the star has an alternate name its probably big or bright or both
-        if len(star['names'])>1:
+        #if len(star['names'])>1:
             # pixel offsets
-            star['xOff'] = star['pixelx'] - xc
-            star['yOff'] = yc - star['pixely']
-            # rotation will go here
-            # compute offset from roll angle
-            yR = star['xOff']*ST.sind(roll) + star['yOff']*ST.cosd(roll)
-            star['ho'] = pitch + yR*pixDegrees + naturalBias # i feel like its plus and the matlab is actually whats wrong
-            shortList.append(star)
-            print star 
-            # print "\n\n\n shortList \n\n\n" %shortList
-    return shortList 
+        star['newx'] = star['pixelx']*ST.cosd(roll) + star['pixely']*ST.sind(roll)
+        star['newy'] = -star['pixelx']*ST.sind(roll) + star['pixely']*ST.cosd(roll)
+        star['xOff'] = star['newx'] - xc
+        star['yOff'] = yc - star['newy']
+        # rotation will go here
+        # compute offset from roll angle
+        star['ho'] = pitch + star['yOff']*pixDegrees + naturalBias # i feel like its plus and the matlab is actually whats wrong
+        #shortList.append(star)
+        print star 
+        # print "\n\n\n shortList \n\n\n" %shortList
+    return starList 
 
-def runSTpy(shortList,t0):
-    # this function runs ST.py with the values from three stars from the "short List"
+def calibrationObservation(shortList, t0):
+   # this function runs ST.py with the values from three stars from the "short List"
     # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
-    t0[2] = t0[2] + 4
+    #t0[2] = t0[2] + 4 #lets worry about correcting the 
     shorterList = []
     for x in range(0, len(shortList)):
-        print shortList[x]['names'][1]
-        starName = shortList[x]['names'][1] 
-        if starName  == 'Vega':
-            shortList[x]['sha'] = [80, 47.02134]
-            shortList[x]['dec'] = [38, 47.1234] 
-            shorterList.append(shortList[x])
-        elif starName == 'Sheliak':
-            shortList[x]['sha'] = [77, 28.8012]
-            shortList[x]['dec'] = [33, 21.7601] 
-           
-            shorterList.append(shortList[x])
-        elif starName == 'Sulafat':
-            shortList[x]['sha'] = [75, 15.8444]
-            shortList[x]['dec'] = [32, 41.3734] 
-            shorterList.append(shortList[x])
-        else:
-            pass
+        for name in shortList[x]['names']:
+            #print shortList[x]['names'][name]
+            print name
+
+            starName = name 
+            if starName  == '14Aql':
+                shortList[x]['sha'] = [74, 16.375]
+                shortList[x]['dec'] = [-3,41.9393] 
+                shorterList.append(shortList[x])
+            elif starName == '15Aql':
+                shortList[x]['sha'] = [73, 26.2652]
+                shortList[x]['dec'] = [-4, 52.95334] 
+               
+                shorterList.append(shortList[x])
+            elif starName == u'\u03bb Aql':
+                shortList[x]['sha'] = [73.0, 26.26254]
+                shortList[x]['dec'] = [-4,52.95335] 
+                shorterList.append(shortList[x])
+            else:
+                pass
     print "actually used observations are ===== %s" %shorterList
     observations = []
     for x in shorterList:
@@ -200,6 +206,49 @@ def runSTpy(shortList,t0):
         observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec))
     print "OBSERVATIONS ====== %s"%observations
     ST.runLocateMeALot(observations)
+
+def lyraObservation(shortList,t0):
+    # this function runs ST.py with the values from three stars from the "short List"
+    # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
+
+    #t0[2] = t0[2] + 4 #lets worry about correcting the 
+    shorterList = []
+    for x in range(0, len(shortList)):
+        try:
+            print shortList[x]['names'][1]
+            starName = shortList[x]['names'][1] 
+            if starName  == 'Vega':
+                shortList[x]['sha'] = [80, 47.02134]
+                shortList[x]['dec'] = [38, 47.1234] 
+                shorterList.append(shortList[x])
+            elif starName == 'Sheliak':
+                shortList[x]['sha'] = [77, 28.8012]
+                shortList[x]['dec'] = [33, 21.7601] 
+               
+                shorterList.append(shortList[x])
+            elif starName == 'Sulafat':
+                shortList[x]['sha'] = [75, 15.8444]
+                shortList[x]['dec'] = [32, 41.3734] 
+                shorterList.append(shortList[x])
+            else:
+                pass
+        except:
+            pass
+    print "actually used observations are ===== %s" %shorterList
+    observations = []
+    for x in shorterList:
+        # have to define the gha as constants for now
+        #gha0 = [17,17.8]
+        #gha1 = [32, 20.3]
+        gha0 = [22, 13.5]
+        gha1 = [37,15.9]
+        Ho = x['ho']
+        sha = x['sha']
+        dec = x['dec']
+        observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec))
+    print "OBSERVATIONS ====== %s"%observations
+    ST.runLocateMeALot(observations)
+    return observations
     # i think here we need to put in an observation
      
             
@@ -218,7 +267,8 @@ def runCenterPixelMethod():
         print "wcsFile ========= %s " %wcsFile
         starList = getStarDict(wcsFile)
         shortList = computeHoFromImage(starList)
-        runSTpy(shortList, t0)  
+        #lyraObservation(shortList, t0)  
+        calibrationObservation(shortList, t0)
         # print "fuckkkinnnggggg starrrr rlisttttt ==== %s" %starList
 
     subprocess.call(['mv', 'analysis.csv', dataDir])

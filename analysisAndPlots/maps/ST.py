@@ -91,7 +91,7 @@ class Observation:
     
     # shared among the rest of the instances of this object
     fixDate = [2015, 10, 7]      # (year, month, date) not used
-    fixTime = [01, 41, 0]        # (hour, minute second)
+    #fixTime = [21, 0, 0]        # (hour, minute second)
     v = 0                      # knots dont edit bc we're statis
     track = 0                 # track heading in degrees 
     lf = -70.934916                  # est. long, @ fixTime E+ W-, degrees
@@ -114,10 +114,10 @@ class Observation:
 
         # everything that requires a method to get
         self.increment = self.calcIncrement()
-        self.hourTea = self.calcHourTea()
+        self.hourTea = 0 #self.calcHourTea() since our image time is the same as fixtime
         self.ghaA = self.interpGhaDec(self.ghAries0, self.ghAries1)
         self.gha = self.calcTrueGha()
-        fixTime = t
+        self.fixTime = t
         # calculate this over again every iteration 
         # self.lng = self.calcLongLat(self.lf, self.bf)[0]
         # self.lat = self.calcLongLat(self.lf, self.bf)[1]
@@ -430,15 +430,16 @@ class Image:
 # and you don't want to use FUCKING matlab
 if __name__ == "__main__":
     mcCount = 0
-    while mcCount < 100: # use 1000 for sims, 1 for obs
+    while mcCount < 1000: # use 1000 for sims, 1 for obs
         # the monte carlo test has to start around this part of the code
         # these are the sample observations from the almanac
                             #t            Ho      sha          gha0
-        noiseBound =0 # 0.00625
+        noiseBound = 1 # 0.00625
         randomNumber = 0 #rng.uniform(-noiseBound,noiseBound) # number of degrees offset
         randomNumber1 = 0 #rng.uniform(-noiseBound,noiseBound)
-        randomNumber2 = 0 #rng.uniform(-noiseBound,noiseBound)
-        bias = 0 
+        randomNumber2 = rng.uniform(-noiseBound,noiseBound)
+        bias = -15 
+        bias2 = 2
         # Shuai and I gathered the following observations from the Protractor Sextant, these Ho values are off by a lot
         altair1 = Observation([01, 29, 46], 55.219 + randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
@@ -479,11 +480,11 @@ if __name__ == "__main__":
                
         #turns out the stars we were looking at were NOT the summer triangle
         # might be able to use astrometry.net to do all the image processing
-        deneb =  Observation([01,51,8 + mcCount],83.7740, [49,38.526], [13,36.6],
+        deneb =  Observation([01,51,8],83.7740, [49,38.526], [13,36.6],
                                 [28,39.1], [45, 16.8167] ) #1 
         gienah = Observation([01,51,8],80.2062, [54, 26.574], [13,36.6],
-                                [28,39.1 + mcCount],  [40, 15.4008]) #2
-        sadr = Observation([01,51,8 + mcCount],78.5567, [54, 26.574], [13,36.6],
+                                [28,39.1],  [40, 15.4008]) #2
+        sadr = Observation([01,51,8 ],78.5567, [54, 26.574], [13,36.6],
                                 [28,39.1], [33,58.2154]) #3
 
         sulafat = Observation([01,9,9], 64.6841-5.801, [75, 15.8444], [30,22.0],
@@ -502,32 +503,41 @@ if __name__ == "__main__":
         t = [0,53,13]
         ghaZero = [16,18.7]
         ghaOne = [31, 21.1]
-        meanBias =2 #5.356 # total amount of diff. i need to get out of my system
+        meanBias =5.356 # total amount of diff. i need to get out of my system
         accounted = 2.7 # stuff i've actually been able to account for so far
-        dt = -2
-        alshain = Observation([0,53, 13+dt], 54.6041 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
-        altair2 = Observation([0,53,13+dt], 56.4606 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
-        tarazed = Observation([0,53,13+dt],57.6411 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
+        dt = 0
+        uncertainty = 0.2222#0.1415
+        tBias = 1
+        r0 = rng.uniform(-uncertainty,uncertainty)
+        r1 = rng.uniform(-uncertainty,uncertainty)
+        r2 = rng.uniform(-uncertainty,uncertainty)
+        t1 = rng.uniform(-tBias, tBias)
+        t2 = rng.uniform(-tBias, tBias)
+        t3 = rng.uniform(-tBias, tBias)
+        alshain = Observation([0,53, 13+t1], 49.309+r0 ,[61, 10.299], ghaZero, ghaOne, [6,24.4])
+        altair2 = Observation([0,53,13+t2], 51.119+r1 , [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
+        tarazed = Observation([0,53,13+t3], 52.209+r2, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
         
-        alshain = Observation([0,53, 13+dt], 54.6098 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
-        altair2 = Observation([0,53,13+dt], 56.4312 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
-        tarazed = Observation([0,53,13+dt],57.5817 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
+#        alshain = Observation([0,53, 13+dt], 54.6098 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
+#        altair2 = Observation([0,53,13+dt], 56.4312 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
+#        tarazed = Observation([0,53,13+dt],57.5817 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
 
-        alshain = Observation([0,53, 13+dt], 54.6151 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
-        altair2 = Observation([0,53,13+dt], 56.4009 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
-        tarazed = Observation([0,53,13+dt],57.5210 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
+#        alshain = Observation([0,53, 13+dt], 54.6151 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
+#        altair2 = Observation([0,53,13+dt], 56.4009 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
+#        tarazed = Observation([0,53,13+dt],57.5210 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
 
-        alshain = Observation([0,53, 13+dt], 54.6176 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
-        altair2 = Observation([0,53,13+dt], 56.3854 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
-        tarazed = Observation([0,53,13+dt],57.4902 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
+#        alshain = Observation([0,53, 13+dt], 54.6176 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
+#        altair2 = Observation([0,53,13+dt], 56.3854 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
+#        tarazed = Observation([0,53,13+dt],57.4902 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
 
         #obs = [regulus, antares, kochab]
         # obs = [altair1, altair2, altair3]
-        # obs = [deneb, vega, altair] # summer Triangle bitches
+        #obs = [deneb, vega, altair] # summer Triangle bitches
         obs = [alshain, altair2, tarazed]
+        #obs = [deneb, gienah, sadr]
         #obs = [sulafat, sheliak, vega2]
 	runLocateMeALot(obs)
-        # obs = [deneb, gienah, sadr]
+        #obs = [deneb, gienah, sadr]
         #inertialList = [inertialParams, ip1, ip2]
         #changingList = [changingParams, cp1, cp2]
         # first time
