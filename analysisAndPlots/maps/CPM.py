@@ -23,8 +23,8 @@ import re
 import glob
 import ST
 
-#dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/test/'
-dataDir = './../'
+dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9_second_raw/'
+#dataDir = './../'
 print "ATTEMPTING TO ACCESS DATA DIR %s" %dataDir
 def extractTimeFromImage(img):
     img = Image.open(img)
