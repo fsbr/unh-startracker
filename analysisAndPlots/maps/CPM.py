@@ -141,10 +141,11 @@ def computeHoFromImage(starList):
     imageHeight = 2592 # pix
     xc = imageWidth/2
     yc = imageHeight/2
-    naturalBias =-11.0701857994#-5.25 #calc from lyra_oct9
+    naturalBias =0#-11.0701857994#-5.25 #calc from lyra_oct9
 
     #PITCH CALIBRATION SUPER IMPORTANT
     pitch =  39.76#62.62 #deg 
+    #i'll need to get the correct roll value from the IMU
     roll =1.9 #-0.32-1.9056-3.19+4444#-0.5 # -2.4#-0.54 
     # strip 'annotations'
     # starList = starList['annotations']
@@ -160,6 +161,7 @@ def computeHoFromImage(starList):
         star['yOff'] = yc - star['newy']
         # rotation will go here
         # compute offset from roll angle
+        # i think the order we do the roll and pitch operations is kind of important
         star['ho'] = pitch + star['yOff']*pixDegrees + naturalBias # i feel like its plus and the matlab is actually whats wrong
         #shortList.append(star)
         print star 
