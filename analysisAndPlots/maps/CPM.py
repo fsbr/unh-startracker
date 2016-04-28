@@ -23,6 +23,7 @@ import re
 import glob
 import ST
 
+f = open('plotData.csv', 'w')
 dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9_second_raw/'
 #dataDir = './../'
 print "ATTEMPTING TO ACCESS DATA DIR %s" %dataDir
@@ -144,9 +145,9 @@ def computeHoFromImage(starList):
     naturalBias =0#-11.0701857994#-5.25 #calc from lyra_oct9
 
     #PITCH CALIBRATION SUPER IMPORTANT
-    pitch =  39.76#62.62 #deg 
+    pitch = 62.62 #39.76#62.62 #deg 
     #i'll need to get the correct roll value from the IMU
-    roll =1.9 #-0.32-1.9056-3.19+4444#-0.5 # -2.4#-0.54 
+    roll =-0.54#1.9 #-0.32-1.9056-3.19+4444#-0.5 # -2.4#-0.54 
     # strip 'annotations'
     # starList = starList['annotations']
 
@@ -166,9 +167,9 @@ def computeHoFromImage(starList):
         #shortList.append(star)
         print star 
         # print "\n\n\n shortList \n\n\n" %shortList
-    return starList 
+    return [starList, pitch, roll]
 
-def calibrationObservation(shortList, t0):
+def calibrationObservation(shortList, t0, pitch, roll):
    # this function runs ST.py with the values from three stars from the "short List"
     # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
     #t0[2] = t0[2] + 4 #lets worry about correcting the 
@@ -192,8 +193,21 @@ def calibrationObservation(shortList, t0):
                 shortList[x]['sha'] = [73.0, 26.26254]
                 shortList[x]['dec'] = [-4,52.95335] 
                 shorterList.append(shortList[x])
+            elif starName  == 'Vega':
+                shortList[x]['sha'] = [80, 47.02134]
+                shortList[x]['dec'] = [38, 47.1234] 
+                shorterList.append(shortList[x])
+            elif starName == 'Sheliak':
+                shortList[x]['sha'] = [77, 28.8012]
+                shortList[x]['dec'] = [33, 21.7601] 
+                shorterList.append(shortList[x])
+            elif starName == 'Sulafat':
+                shortList[x]['sha'] = [75, 15.8444]
+                shortList[x]['dec'] = [32, 41.3734] 
+                shorterList.append(shortList[x])
             else:
                 pass
+
     print "actually used observations are ===== %s" %shorterList
     observations = []
     for x in shorterList:
@@ -205,52 +219,53 @@ def calibrationObservation(shortList, t0):
         Ho = x['ho']
         sha = x['sha']
         dec = x['dec']
-        observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec))
+        observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec, pitch))
+        f.write('%s,%s,%s,%s\n'%(x['xOff'],x['yOff'], pitch, roll))
     print "OBSERVATIONS ====== %s"%observations
     ST.runLocateMeALot(observations)
 
-def lyraObservation(shortList,t0):
-    # this function runs ST.py with the values from three stars from the "short List"
-    # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
-
-    #t0[2] = t0[2] + 4 #lets worry about correcting the 
-    shorterList = []
-    for x in range(0, len(shortList)):
-        try:
-            print shortList[x]['names'][1]
-            starName = shortList[x]['names'][1] 
-            if starName  == 'Vega':
-                shortList[x]['sha'] = [80, 47.02134]
-                shortList[x]['dec'] = [38, 47.1234] 
-                shorterList.append(shortList[x])
-            elif starName == 'Sheliak':
-                shortList[x]['sha'] = [77, 28.8012]
-                shortList[x]['dec'] = [33, 21.7601] 
-               
-                shorterList.append(shortList[x])
-            elif starName == 'Sulafat':
-                shortList[x]['sha'] = [75, 15.8444]
-                shortList[x]['dec'] = [32, 41.3734] 
-                shorterList.append(shortList[x])
-            else:
-                pass
-        except:
-            pass
-    print "actually used observations are ===== %s" %shorterList
-    observations = []
-    for x in shorterList:
-        # have to define the gha as constants for now
-        #gha0 = [17,17.8]
-        #gha1 = [32, 20.3]
-        gha0 = [22, 13.5]
-        gha1 = [37,15.9]
-        Ho = x['ho']
-        sha = x['sha']
-        dec = x['dec']
-        observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec))
-    print "OBSERVATIONS ====== %s"%observations
-    ST.runLocateMeALot(observations)
-    return observations
+#def lyraObservation(shortList,t0):
+#    # this function runs ST.py with the values from three stars from the "short List"
+#    # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
+#
+#    #t0[2] = t0[2] + 4 #lets worry about correcting the 
+#    shorterList = []
+#    for x in range(0, len(shortList)):
+#        try:
+#            print shortList[x]['names'][1]
+#            starName = shortList[x]['names'][1] 
+#            if starName  == 'Vega':
+#                shortList[x]['sha'] = [80, 47.02134]
+#                shortList[x]['dec'] = [38, 47.1234] 
+#                shorterList.append(shortList[x])
+#            elif starName == 'Sheliak':
+#                shortList[x]['sha'] = [77, 28.8012]
+#                shortList[x]['dec'] = [33, 21.7601] 
+#               
+#                shorterList.append(shortList[x])
+#            elif starName == 'Sulafat':
+#                shortList[x]['sha'] = [75, 15.8444]
+#                shortList[x]['dec'] = [32, 41.3734] 
+#                shorterList.append(shortList[x])
+#            else:
+#                pass
+#        except:
+#            pass
+#    print "actually used observations are ===== %s" %shorterList
+#    observations = []
+#    for x in shorterList:
+#        # have to define the gha as constants for now
+#        #gha0 = [17,17.8]
+#        #gha1 = [32, 20.3]
+#        gha0 = [22, 13.5]
+#        gha1 = [37,15.9]
+#        Ho = x['ho']
+#        sha = x['sha']
+#        dec = x['dec']
+#        observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec))
+#    print "OBSERVATIONS ====== %s"%observations
+#    ST.runLocateMeALot(observations)
+#    return observations
     # i think here we need to put in an observation
      
             
@@ -268,16 +283,21 @@ def runCenterPixelMethod():
         wcsFile = grabWcsFile(image)
         print "wcsFile ========= %s " %wcsFile
         starList = getStarDict(wcsFile)
-        shortList = computeHoFromImage(starList)
+        temp = computeHoFromImage(starList)
+        shortList = temp[0]
+        pitch = temp[1]
+        roll = temp[2]
         #lyraObservation(shortList, t0)  
-        calibrationObservation(shortList, t0)
+        calibrationObservation(shortList, t0, pitch, roll)
         # print "fuckkkinnnggggg starrrr rlisttttt ==== %s" %starList
 
     subprocess.call(['mv', 'analysis.csv', dataDir])
     subprocess.call(['mv', 'trueInertials.csv', dataDir])
+    subprocess.call(['mv', 'plotData.csv', dataDir])
         
 
 
 if __name__ == "__main__":
     runCenterPixelMethod()  
+    f.close()
 

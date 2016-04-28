@@ -100,7 +100,7 @@ class Observation:
     #lf = -75
     #bf = 45                            # note the sign convenction for lha is opposite
 
-    def __init__(self, t,  ho, sha, ghAries0, ghAries1, dec):
+    def __init__(self, t,  ho, sha, ghAries0, ghAries1, dec, pitch=0):
         
         # the stuff in here, we just want to exist for THAT INSTANCE
 
@@ -111,6 +111,7 @@ class Observation:
         self.ghAries1 = ghAries1
         self.sha = self.convertAngle(sha)
         self.dec = self.convertAngle(dec)
+        self.pitch = pitch
 
         # everything that requires a method to get
         self.increment = self.calcIncrement()
@@ -180,6 +181,7 @@ class Observation:
         lng = longEst + ((self.hourTea*(self.v/60)*sind(self.track))/cosd(latEst))
         lat = (latEst + (self.hourTea*(self.v/60)*cosd(self.track)))# %90 # really just throwing smth in there to see what sticks 
         print "lng = %s lat = %s" %(lng, lat)
+        print "pitch = %s" %self.pitch
         return [lng, lat]
         
 
@@ -249,6 +251,7 @@ class Observation:
         print "hc == " + str(self.hc)
         print "z == " + str(self.z)
         print "p == " + str(self.p)
+        print "pitch" + str(self.pitch)
     
     def writeInertial(self, fileName):
         # this writes the inertial logfile for that observation 
@@ -372,6 +375,7 @@ def runLocateMeALot(obs):
         # print "location is %s" %str(location)
         hoiList = []
         hciList = []
+        angleDiff = []
         for x in obs:
             hoi = x.writeInertial(inertialParams)
             hci = x.writeChanging(changingParams)
@@ -398,6 +402,7 @@ def runLocateMeALot(obs):
                 x.writeDebug(inertials)
             if count == 10:
                 dLogFinalPoint.write("%s,%s,%s\n" %(location[0], location[1], location[2]))
+                # put in the amount of pixels away the 
                 analysis.write("%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(hoiList[0],hoiList[1],hoiList[2],hciList[0],hciList[1],hciList[2],location[0],location[1],location[2]))
                 # having the closes here means that ST.py won't run standalone anymore
                 #dLog.close()
@@ -583,6 +588,5 @@ if __name__ == "__main__":
         #altair2.printAns()
         #altair3.printAns()
         mcCount +=1
-        
 # close the logfile
 
