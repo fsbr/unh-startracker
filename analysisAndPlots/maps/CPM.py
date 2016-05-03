@@ -220,7 +220,7 @@ def calibrationObservation(shortList, t0, pitch, roll):
         sha = x['sha']
         dec = x['dec']
         observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec, pitch))
-        f.write('%s,%s,%s,%s\n'%(x['xOff'],x['yOff'], pitch, roll))
+        f.write('%s,%s,%s,%s,%s,%s,%s,%s,%s\n'%(x['ho'],x['newx'], x['newy'],x['pixelx'], x['pixely'],x['xOff'],x['yOff'], pitch, roll))
     print "OBSERVATIONS ====== %s"%observations
     ST.runLocateMeALot(observations)
 
