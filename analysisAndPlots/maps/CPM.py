@@ -210,6 +210,7 @@ def calibrationObservation(shortList, t0, pitch, roll):
 
     print "actually used observations are ===== %s" %shorterList
     observations = []
+    
     for x in shorterList:
         # have to define the gha as constants for now
         #gha0 = [17,17.8]
@@ -298,6 +299,7 @@ def runCenterPixelMethod():
 
 
 if __name__ == "__main__":
+    f.write('ho,newx,newy,pixelx,pixely,xoff,yoff,pitch,roll\n')
     runCenterPixelMethod()  
     f.close()
 
