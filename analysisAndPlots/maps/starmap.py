@@ -84,6 +84,9 @@ lats = realData[1]
 
 ab = plt.hist(lons,bins=range(-180,180))
 ac = plt.hist(lats,bins=range(-90,90))
+plt.xlabel('Degrees of Estimate')
+plt.ylabel('Frequency')
+plt.title('Histogram of Observations')
 plt.show()
 print ab
 print ac

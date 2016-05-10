@@ -94,9 +94,10 @@ class Observation:
     #fixTime = [21, 0, 0]        # (hour, minute second)
     v = 0                      # knots dont edit bc we're statis
     track = 0                 # track heading in degrees 
-    lf = -70.934916                  # est. long, @ fixTime E+ W-, degrees
-    bf = 43.13376                   # est. lat @ fixTime N+ S-, degrees    
-    
+    #lf = -70.934916                  # est. long, @ fixTime E+ W-, degrees
+    #bf = 43.13376                   # est. lat @ fixTime N+ S-, degrees    
+    lf = -15         # this one is for the example problem
+    bf = 32
     #lf = -75
     #bf = 45                            # note the sign convenction for lha is opposite
 
@@ -180,8 +181,8 @@ class Observation:
 
         lng = longEst + ((self.hourTea*(self.v/60)*sind(self.track))/cosd(latEst))
         lat = (latEst + (self.hourTea*(self.v/60)*cosd(self.track)))# %90 # really just throwing smth in there to see what sticks 
-        print "lng = %s lat = %s" %(lng, lat)
-        print "pitch = %s" %self.pitch
+        #print "lng = %s lat = %s" %(lng, lat)
+        #print "pitch = %s" %self.pitch
         return [lng, lat]
         
 
@@ -306,11 +307,11 @@ def locateMe(obs, count, newLong, newLat):
      
     # single value parameters
     if count == 0:
-        print "count == 0"
+        #print "count == 0"
         oldLat = obs[0].bf
         oldLong = obs[0].lf 
     elif count > 0:
-        print "count > 0"
+        #print "count > 0"
         oldLat = newLat
         oldLong = newLong
 
@@ -439,19 +440,19 @@ if __name__ == "__main__":
         # the monte carlo test has to start around this part of the code
         # these are the sample observations from the almanac
                             #t            Ho      sha          gha0
-        noiseBound = 1 # 0.00625
+        noiseBound = 0 # 0.00625
         randomNumber = 0 #rng.uniform(-noiseBound,noiseBound) # number of degrees offset
         randomNumber1 = 0 #rng.uniform(-noiseBound,noiseBound)
-        randomNumber2 = rng.uniform(-noiseBound,noiseBound)
-        bias = -15 
-        bias2 = 2
+        randomNumber2 = 0#rng.uniform(-noiseBound,noiseBound)
+        bias = 0 #-15 
+        bias2 = 0
         # Shuai and I gathered the following observations from the Protractor Sextant, these Ho values are off by a lot
-        altair1 = Observation([01, 29, 46], 55.219 + randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
+        altair1 = Observation([01, 29, 46], 54.1452730873 + randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
        
-        altair2 = Observation([01, 37, 53], 54.626 + randomNumber1 + bias , [62, 06.6], [13, 36.6], [28, 39.1],
+        altair2 = Observation([01, 37, 53], 53.5745616879 + randomNumber1 + bias , [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
-        altair3 = Observation([01, 45, 15], 53.24 +randomNumber2 + bias, [62, 06.6], [13, 36.6], [28, 39.1],
+        altair3 = Observation([01, 45, 15], 52.9904094195 +randomNumber2 + bias, [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
                
         # these observations are from the nautical almanac 2015        
@@ -464,6 +465,16 @@ if __name__ == "__main__":
                               [237, 33.1], [-26, 27.8])
 
         kochab = Observation([21, 10, 34], 47.5309 , [137, 19.7], [237, 33.1],
+                              [252, 35.6], [74, 5.9])
+        # for perfect simulation
+        regulus = Observation([20, 39, 23], 27.3054590703 ,[207, 42.3], [222, 30.6], 
+                               #gha1        dec
+                               [237, 33.1], [11, 53.4]) 
+
+        antares = Observation([20, 45, 47], 25.4899476842 , [112, 24.2], [222, 30.6],
+                              [237, 33.1], [-26, 27.8])
+
+        kochab = Observation([21, 10, 34], 47.8823288032 , [137, 19.7], [237, 33.1],
                               [252, 35.6], [74, 5.9])
 
         # make a new "summer triangle" observation data set, as it would be in the images
@@ -479,8 +490,8 @@ if __name__ == "__main__":
                             [28, 39.1], [38, 48.4])
         deneb1 = Observation([01,41,39], 79.1819,[49, 30.1], [13, 36.6], 
                                 [28, 39.1], [45, 20.6])
-        altair1 = Observation([01,41,39], 75.8566, [62, 06.6], [13, 36.6],
-                            [28, 39.1], [8,55.0])
+        #altair1 = Observation([01,41,39], 75.8566, [62, 06.6], [13, 36.6],
+        #                    [28, 39.1], [8,55.0])
 
                
         #turns out the stars we were looking at were NOT the summer triangle
@@ -505,6 +516,15 @@ if __name__ == "__main__":
                                 [45, 24.4], [33,21.7601])
         vega2 = Observation([01, 9,9], 62.89237, [80, 47.02134], [30, 22.0],
                                 [45, 24.4], [38, 47.01234])
+        # rewriting the obs for the true value no noise test
+        sulafat = Observation([01,9,9], 59.2972334791, [75, 15.8444], [30,22.0],
+                                [45, 24.4], [32, 41.3734])
+        sheliak = Observation([01, 9, 9], 58.0257586391, [77.0, 28.8012], [30, 22.0],
+                                [45, 24.4], [33,21.7601])
+        vega2 = Observation([01, 9,9], 57.9522100447, [80, 47.02134], [30, 22.0],
+                                [45, 24.4], [38, 47.01234])
+
+
         t = [0,53,13]
         ghaZero = [16,18.7]
         ghaOne = [31, 21.1]
@@ -520,7 +540,7 @@ if __name__ == "__main__":
         t2 = rng.uniform(-tBias, tBias)
         t3 = rng.uniform(-tBias, tBias)
         alshain = Observation([0,53, 13+t1], 49.309+r0 ,[61, 10.299], ghaZero, ghaOne, [6,24.4])
-        altair2 = Observation([0,53,13+t2], 51.119+r1 , [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
+        #altair2 = Observation([0,53,13+t2], 51.119+r1 , [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
         tarazed = Observation([0,53,13+t3], 52.209+r2, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
         
 #        alshain = Observation([0,53, 13+dt], 54.6098 - meanBias,[61, 10.299], ghaZero, ghaOne, [6,24.4])
@@ -535,11 +555,18 @@ if __name__ == "__main__":
 #        altair2 = Observation([0,53,13+dt], 56.3854 - meanBias, [62, 18.2504], ghaZero, ghaOne, [8,52.0993])
 #        tarazed = Observation([0,53,13+dt],57.4902 - meanBias, [63, 26.1049], ghaZero, ghaOne, [10, 36.7657])
 
-        #obs = [regulus, antares, kochab]
+
+        # nautical almanac example
+        obs = [regulus, antares, kochab]
+        # obs = [altair1,altair2,altair3]
+        # one star sighted 3 times
         # obs = [altair1, altair2, altair3]
         #obs = [deneb, vega, altair] # summer Triangle bitches
-        obs = [alshain, altair2, tarazed]
+
+        #obs = [alshain, altair2, tarazed]
         #obs = [deneb, gienah, sadr]
+
+        # 3 stars sighted the same time
         #obs = [sulafat, sheliak, vega2]
 	runLocateMeALot(obs)
         #obs = [deneb, gienah, sadr]
