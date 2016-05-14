@@ -24,7 +24,6 @@ import glob
 import ST
 
 f = open('plotData.csv', 'w')
-zz = open('imageList.csv','w')
 dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9_second_raw/'
 #dataDir = './../'
 print "ATTEMPTING TO ACCESS DATA DIR %s" %dataDir
@@ -138,24 +137,18 @@ def computeHoFromImage(starList):
     # that is, the small angle approximation works
     pixScale = 24.1#5 # arcsec/pixel
     pixDegrees = pixScale/3600
-    K = 3600/24.2
+
     imageWidth = 3872 # pix
     imageHeight = 2592 # pix
     xc = imageWidth/2
     yc = imageHeight/2
-    naturalBias =-4.9399#-11.0701857994#-5.25 #calc from lyra_oct9 basic optimum
-    #naturalBias =-4.7598 #this is teh TRUE
-    #naturalBias =-3.3920
-    #naturalBias = -4.9749
-    #naturalBias = -5.2764
+    naturalBias =-4.9399#-11.0701857994#-5.25 #calc from lyra_oct9
+
     #PITCH CALIBRATION SUPER IMPORTANT
     pitch = 62.62 #39.76#62.62 #deg 
     #i'll need to get the correct roll value from the IMU
     roll =-0.54#1.9 #-0.32-1.9056-3.19+4444#-0.5 # -2.4#-0.54 
-    rollOffset = -4.7598 #basic optimal point
-    #rollOffset = 0.4523 #this one is the TRUE
-    #rollOffset = 10.4774
-    #rollOffset = -5.2764
+    rollOffset = -4.7598
     # strip 'annotations'
     # starList = starList['annotations']
 
@@ -166,13 +159,12 @@ def computeHoFromImage(starList):
             # pixel offsets
         star['newx'] = star['pixelx']*ST.cosd(roll+rollOffset) + star['pixely']*ST.sind(roll+rollOffset)
         star['newy'] = -star['pixelx']*ST.sind(roll+rollOffset) + star['pixely']*ST.cosd(roll+rollOffset)
-        star['xOff'] = star['pixelx'] - xc
-        star['yOff'] = yc - star['pixely']
+        star['xOff'] = star['newx'] - xc
+        star['yOff'] = yc - star['newy']
         # rotation will go here
         # compute offset from roll angle
         # i think the order we do the roll and pitch operations is kind of important
-        #star['ho'] = pitch + star['yOff']*pixDegrees + naturalBias # i feel like its plus and the matlab is actually whats wrong
-        star['ho'] = -pixDegrees*star['xOff']*ST.sind(roll+rollOffset) + (pixDegrees*star['yOff'] + (pitch + naturalBias))*ST.cosd(roll+rollOffset)
+        star['ho'] = pitch + star['yOff']*pixDegrees + naturalBias # i feel like its plus and the matlab is actually whats wrong
         #shortList.append(star)
         print star 
         # print "\n\n\n shortList \n\n\n" %shortList
@@ -285,7 +277,7 @@ def runCenterPixelMethod():
     # what would go in __name __ == "__main__" so that way it can be easily 
     # exported to another module if one day we need that
     imageList = populateImageList()
-    zz.write(str(imageList))
+    print imageList 
     for image in imageList:
         # produce the initial wcs file
         makeWcsFiles(image)
@@ -311,4 +303,4 @@ if __name__ == "__main__":
     f.write('ho,newx,newy,pixelx,pixely,xoff,yoff,pitch,roll\n')
     runCenterPixelMethod()  
     f.close()
-    zz.close()
+

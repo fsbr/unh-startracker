@@ -94,10 +94,10 @@ class Observation:
     #fixTime = [21, 0, 0]        # (hour, minute second)
     v = 0                      # knots dont edit bc we're statis
     track = 0                 # track heading in degrees 
-    #lf = -70.934916                  # est. long, @ fixTime E+ W-, degrees
-    #bf = 43.13376                   # est. lat @ fixTime N+ S-, degrees    
-    lf = -15         # this one is for the example problem
-    bf = 32
+    lf = -70.934916                  # est. long, @ fixTime E+ W-, degrees
+    bf = 43.13376                   # est. lat @ fixTime N+ S-, degrees    
+    #lf = -15         # this one is for the example problem
+    #bf = 32
     #lf = -75
     #bf = 45                            # note the sign convenction for lha is opposite
 
@@ -440,19 +440,19 @@ if __name__ == "__main__":
         # the monte carlo test has to start around this part of the code
         # these are the sample observations from the almanac
                             #t            Ho      sha          gha0
-        noiseBound = 0 # 0.00625
-        randomNumber = 0 #rng.uniform(-noiseBound,noiseBound) # number of degrees offset
-        randomNumber1 = 0 #rng.uniform(-noiseBound,noiseBound)
-        randomNumber2 = 0#rng.uniform(-noiseBound,noiseBound)
-        bias = 0 #-15 
+        noiseBound = 1#0.1666 # 0.00625
+        randomNumber = rng.uniform(-noiseBound,noiseBound) # number of degrees offset
+        randomNumber1 = rng.uniform(-noiseBound,noiseBound)
+        randomNumber2 = rng.uniform(-noiseBound,noiseBound)
+        bias =2#-2  #-15 
         bias2 = 0
         # Shuai and I gathered the following observations from the Protractor Sextant, these Ho values are off by a lot
         altair1 = Observation([01, 29, 46], 54.1452730873 + randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
        
-        altair2 = Observation([01, 37, 53], 53.5745616879 + randomNumber1 + bias , [62, 06.6], [13, 36.6], [28, 39.1],
+        altair2 = Observation([01, 37, 53], 53.5745616879 + randomNumber + bias , [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
-        altair3 = Observation([01, 45, 15], 52.9904094195 +randomNumber2 + bias, [62, 06.6], [13, 36.6], [28, 39.1],
+        altair3 = Observation([01, 45, 15], 52.9904094195 +randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
                
         # these observations are from the nautical almanac 2015        
@@ -467,14 +467,14 @@ if __name__ == "__main__":
         kochab = Observation([21, 10, 34], 47.5309 , [137, 19.7], [237, 33.1],
                               [252, 35.6], [74, 5.9])
         # for perfect simulation
-        regulus = Observation([20, 39, 23], 27.3054590703 ,[207, 42.3], [222, 30.6], 
+        regulus = Observation([20, 39, 23], 27.3054590703+randomNumber +bias ,[207, 42.3], [222, 30.6], 
                                #gha1        dec
                                [237, 33.1], [11, 53.4]) 
 
-        antares = Observation([20, 45, 47], 25.4899476842 , [112, 24.2], [222, 30.6],
+        antares = Observation([20, 45, 47], 25.4899476842+randomNumber + bias , [112, 24.2], [222, 30.6],
                               [237, 33.1], [-26, 27.8])
 
-        kochab = Observation([21, 10, 34], 47.8823288032 , [137, 19.7], [237, 33.1],
+        kochab = Observation([21, 10, 34], 47.8823288032+randomNumber +bias , [137, 19.7], [237, 33.1],
                               [252, 35.6], [74, 5.9])
 
         # make a new "summer triangle" observation data set, as it would be in the images
@@ -517,11 +517,11 @@ if __name__ == "__main__":
         vega2 = Observation([01, 9,9], 62.89237, [80, 47.02134], [30, 22.0],
                                 [45, 24.4], [38, 47.01234])
         # rewriting the obs for the true value no noise test
-        sulafat = Observation([01,9,9], 59.2972334791, [75, 15.8444], [30,22.0],
+        sulafat = Observation([01,9,9], 59.2972334791+randomNumber+bias, [75, 15.8444], [30,22.0],
                                 [45, 24.4], [32, 41.3734])
-        sheliak = Observation([01, 9, 9], 58.0257586391, [77.0, 28.8012], [30, 22.0],
+        sheliak = Observation([01, 9, 9], 58.0257586391+randomNumber1+bias, [77.0, 28.8012], [30, 22.0],
                                 [45, 24.4], [33,21.7601])
-        vega2 = Observation([01, 9,9], 57.9522100447, [80, 47.02134], [30, 22.0],
+        vega2 = Observation([01, 9,9], 57.9522100447+randomNumber2+bias, [80, 47.02134], [30, 22.0],
                                 [45, 24.4], [38, 47.01234])
 
 
@@ -557,8 +557,8 @@ if __name__ == "__main__":
 
 
         # nautical almanac example
-        obs = [regulus, antares, kochab]
-        # obs = [altair1,altair2,altair3]
+        #obs = [regulus, antares, kochab]
+        #obs = [altair1,altair2,altair3]
         # one star sighted 3 times
         # obs = [altair1, altair2, altair3]
         #obs = [deneb, vega, altair] # summer Triangle bitches
@@ -567,7 +567,7 @@ if __name__ == "__main__":
         #obs = [deneb, gienah, sadr]
 
         # 3 stars sighted the same time
-        #obs = [sulafat, sheliak, vega2]
+        obs = [sulafat, sheliak, vega2]
 	runLocateMeALot(obs)
         #obs = [deneb, gienah, sadr]
         #inertialList = [inertialParams, ip1, ip2]

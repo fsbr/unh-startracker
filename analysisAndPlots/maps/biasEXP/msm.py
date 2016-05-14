@@ -11,76 +11,70 @@ import matplotlib.pyplot as plt
 def findMean(aList):
     return sum(aList)/len(aList)
 
+
 csvFiles = ['.csv', 'arcTen2.csv']
-with open('dLogFinalPoint', 'rb') as f:
-    reader = csv.reader(f)
-    longLats = list(reader)
+def makeLatLons(fileName):
+    # this function returns the latitude and lognitude from an input file into 
+    with open(fileName, 'rb') as f:
+        reader = csv.reader(f)
+        longLats = list(reader)
 
-lons = []
-lats = []
-outLIARS = [[],[]]
-realData = [[],[]]
-for row in longLats:
-    lons.append(float(row[0]))
-    lats.append(float(row[1]))
+    lons = []
+    lats = []
+    outLIARS = [[],[]]
+    realData = [[],[]]
+    for row in longLats:
+        lons.append(float(row[0]))
+        lats.append(float(row[1]))
 
-longLats = [lons, lats]
-# print longLats[0][:]
-meanLat = findMean(lats)
-meanLon = findMean(lons)
-#print meanLat
-#print meanLon
+    longLats = [lons, lats]
+    # print longLats[0][:]
+    meanLat = findMean(lats)
+    meanLon = findMean(lons)
+    #print meanLat
+    #print meanLon
+    return [lats,lons]
 
-# calculate the iqr and stuff
-def iqrAndStuff(aList):
-    # this function computes the interquartile range and stuff
-    lowQ = np.percentile(aList,25)
-    highQ = np.percentile(aList,75)
+dataPoints = makeLatLons('u')
+lats = dataPoints[0]
+lons = dataPoints[1]
 
-    iqr = highQ - lowQ
-    #print lowQ
-    #print highQ
-    #print " iqr == %s" %iqr
+data2 = makeLatLons('nu')
+lats2 = data2[0]
+lons2 = data2[1]
 
-    # compute upper bound
-    upperBound = highQ+iqr
-    lowerBound = lowQ-iqr
-    #print " upperBound == %s" %upperBound
-    #print " lowerBound == %s" %lowerBound
-    return [iqr, lowerBound, upperBound]
+#latQuarts = iqrAndStuff(lats)
+#lonQuarts = iqrAndStuff(lons)
 
-lonQuarts = iqrAndStuff(lons)
-latQuarts = iqrAndStuff(lats)
-
-for i in range(0,len(longLats[0])): # the longitudes
-    if longLats[0][i] > lonQuarts[2]:
-        outLIARS[0].append(longLats[0][i])
-        outLIARS[1].append(longLats[1][i])
-        #print "both coordinates, long too big ==%s,%s" %(longLats[0][i],longLats[1][i])
-    elif longLats[0][i] < lonQuarts[1]:
-        outLIARS[0].append(longLats[0][i])
-        outLIARS[1].append(longLats[1][i])
+#for i in range(0,len(lons)): # the longitudes
+#    if longLats[0][i] > lonQuarts[2]:
+#        outLIARS[0].append(longLats[0][i])
+#        outLIARS[1].append(longLats[1][i])
+#        #print "both coordinates, long too big ==%s,%s" %(longLats[0][i],longLats[1][i])
+#    elif longLats[0][i] < lonQuarts[1]:
+#        outLIARS[0].append(longLats[0][i])
+#        outLIARS[1].append(longLats[1][i])
         #print "both coordinate, long to small == %s,%s"%(longLats[0][i],longLats[1][i])
-    elif longLats[1][i] > latQuarts[2]:
-        outLIARS[0].append(longLats[0][i])
-        outLIARS[1].append(longLats[1][i])
+#    elif longLats[1][i] > latQuarts[2]:
+#        outLIARS[0].append(longLats[0][i])
+#        outLIARS[1].append(longLats[1][i])
         #print "both coordinates, lat too big ==%s,%s" %(longLats[0][i],longLats[1][i])
-    elif longLats[1][i] < latQuarts[1]:
-        outLIARS[0].append(longLats[0][i])
-        outLIARS[1].append(longLats[1][i])
+#    elif longLats[1][i] < latQuarts[1]:
+#        outLIARS[0].append(longLats[0][i])
+#        outLIARS[1].append(longLats[1][i])
         #print "both coordinate, lat to small == %s,%s"%(longLats[0][i],longLats[1][i])
-    else:
-        realData[0].append(longLats[0][i])
-        realData[1].append(longLats[1][i])
+#    else:
+#        realData[0].append(longLats[0][i])
+#        realData[1].append(longLats[1][i])
          
 #print outLIARS
-oLons = outLIARS[0]
-oLats = outLIARS[1]
-print oLons
-print oLats
+#oLons = outLIARS[0]
+#oLats = outLIARS[1]
+#print oLons
+#print oLats
 
-lons = realData[0]
-lats = realData[1]
+#lons = realData[0]
+#lats = realData[1]
 
 ab = plt.hist(lons,bins=range(-180,180))
 ac = plt.hist(lats,bins=range(-90,90))
@@ -124,12 +118,15 @@ my_map.drawparallels(np.arange(-90, 90, 30))
 # put in the points
 
 x,y = my_map(lons, lats)
-xO,yO = my_map(oLons, oLats)
+x1,y1 = my_map(lons2,lats2)
+#xO,yO = my_map(oLons, oLats)
 tvx, tvy = my_map(-70.9349, 43.1337)
-my_map.plot(tvx,tvy, 'co', markersize=5)
+my_map.plot(x1,y1,'ro',markersize=5)
 my_map.plot(x,y, 'bo', markersize =5)
-#my_map.plot(xO,yO, 'ro', markersize=5)
+my_map.plot(tvx,tvy, 'co', markersize=10)
 plt.xlabel('longitude')
 plt.ylabel('latitude')
-plt.title('Non Uniform Bias Effect')
+plt.title('predicted experimental noise value 600 arcseconds')
+plt.legend()
+
 plt.show()
