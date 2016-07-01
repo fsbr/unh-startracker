@@ -5,6 +5,7 @@ This program is used with a DSLR camera that gives good images of the stars.
 you take pictures and post process them in here, then, tries to guess your location using the USNO conscise method
 
 The concise method is stored in analysisAndPlots/maps/ST.py
-The image processing is stored in analysisAndPlots/astro/client/centerPixelMethod.py
+The image processing is stored in analysisAndPlots/astro/client/CPM.py
 
-It's coming along.
+Currently in the process of porting to python 3, which is just something i
+should have done a long time ago tbh
