@@ -27,7 +27,7 @@ f = open('plotData.csv', 'w')
 zz = open('imageList.csv','w')
 dataDir = '/home/newmy/research/exp/unh-startracker/dataSets/lyra_oct9_second_raw/'
 #dataDir = './../'
-print "ATTEMPTING TO ACCESS DATA DIR %s" %dataDir
+print("ATTEMPTING TO ACCESS DATA DIR %s" %dataDir)
 def extractTimeFromImage(img):
     img = Image.open(img)
     imgTime = img._getexif()
@@ -40,7 +40,7 @@ def extractTimeFromImage(img):
 
 def populateImageList():
     imageList = glob.glob('%s*.jpg'%dataDir)
-    print imageList
+    print(imageList)
     return imageList
 
 def grabWcsFile(image):
@@ -77,16 +77,16 @@ try:
             try:
                 # print "blah =========== %s" %type(blah['jobs'][0])
                 if type(blah['jobs'][0]) == int:
-                    print "TYEP OF blah =========== %s" %type(blah['jobs'])
+                    print("TYPE OF blah =========== %s" %type(blah['jobs']))
                     jobId = blah['jobs'][0]
-                    print "jobId =============== %s" % jobId
+                    print("jobId =============== %s" % jobId)
                     break
             except:
                 time.sleep(5) 
                 pass
 
         
-        print" fuckkk %s" % blah 
+        print("debug %s" % blah)
         
         # this time.sleep call will need to be more bulletproof
         time.sleep(60) 
@@ -121,19 +121,18 @@ def getStarDict(wcsFile):
     # start a star dictionary object (kind of)
     wcsString = '%s%s'%(dataDir,wcsFile)
     command = ['/usr/local/astrometry/bin/plotann.py', '--brightcat','/home/newmy/research/exp/unh-startracker/astrometry.net-0.50/catalogs/brightstars.fits', wcsString]
-    print 'command is %s' %command
+    print( 'command is %s' %command)
     sdProc = subprocess.Popen(command, stdout=subprocess.PIPE)
     #sdProc = os.popen(command).read() 
     starDict = sdProc.stdout.read()
     
     # put the dictionary in dictionary (instead of string) form
     starDict = json.loads(starDict)
-    print "star dictionary == %s"%type(starDict)
-    print starDict
+    print("star dictionary == %s"%type(starDict))
     return starDict
 
 def computeHoFromImage(starList):
-
+    print("in compute Ho From Image")
     # the leading theory is that this approximation will only work when the stars are closeby
     # that is, the small angle approximation works
     pixScale = 24.1#5 # arcsec/pixel
@@ -174,7 +173,7 @@ def computeHoFromImage(starList):
         #star['ho'] = pitch + star['yOff']*pixDegrees + naturalBias # i feel like its plus and the matlab is actually whats wrong
         star['ho'] = -pixDegrees*star['xOff']*ST.sind(roll+rollOffset) + (pixDegrees*star['yOff'] + (pitch + naturalBias))*ST.cosd(roll+rollOffset)
         #shortList.append(star)
-        print star 
+        print(star)
         # print "\n\n\n shortList \n\n\n" %shortList
     return [starList, pitch, roll]
 
@@ -186,7 +185,7 @@ def calibrationObservation(shortList, t0, pitch, roll):
     for x in range(0, len(shortList)):
         for name in shortList[x]['names']:
             #print shortList[x]['names'][name]
-            print name
+            print(name)
 
             starName = name 
             if starName  == '14Aql':
@@ -217,7 +216,7 @@ def calibrationObservation(shortList, t0, pitch, roll):
             else:
                 pass
 
-    print "actually used observations are ===== %s" %shorterList
+    print("actually used observations are ===== %s" %shorterList)
     observations = []
     
     for x in shorterList:
@@ -231,55 +230,9 @@ def calibrationObservation(shortList, t0, pitch, roll):
         dec = x['dec']
         observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec, pitch))
         f.write('%s,%s,%s,%s,%s,%s,%s,%s,%s\n'%(x['ho'],x['newx'], x['newy'],x['pixelx'], x['pixely'],x['xOff'],x['yOff'], pitch, roll))
-    print "OBSERVATIONS ====== %s"%observations
+    print("OBSERVATIONS ====== %s"%observations)
     ST.runLocateMeALot(observations)
 
-#def lyraObservation(shortList,t0):
-#    # this function runs ST.py with the values from three stars from the "short List"
-#    # we still need data from the almanac but there's defintiely a way to leverage the astrometry data
-#
-#    #t0[2] = t0[2] + 4 #lets worry about correcting the 
-#    shorterList = []
-#    for x in range(0, len(shortList)):
-#        try:
-#            print shortList[x]['names'][1]
-#            starName = shortList[x]['names'][1] 
-#            if starName  == 'Vega':
-#                shortList[x]['sha'] = [80, 47.02134]
-#                shortList[x]['dec'] = [38, 47.1234] 
-#                shorterList.append(shortList[x])
-#            elif starName == 'Sheliak':
-#                shortList[x]['sha'] = [77, 28.8012]
-#                shortList[x]['dec'] = [33, 21.7601] 
-#               
-#                shorterList.append(shortList[x])
-#            elif starName == 'Sulafat':
-#                shortList[x]['sha'] = [75, 15.8444]
-#                shortList[x]['dec'] = [32, 41.3734] 
-#                shorterList.append(shortList[x])
-#            else:
-#                pass
-#        except:
-#            pass
-#    print "actually used observations are ===== %s" %shorterList
-#    observations = []
-#    for x in shorterList:
-#        # have to define the gha as constants for now
-#        #gha0 = [17,17.8]
-#        #gha1 = [32, 20.3]
-#        gha0 = [22, 13.5]
-#        gha1 = [37,15.9]
-#        Ho = x['ho']
-#        sha = x['sha']
-#        dec = x['dec']
-#        observations.append(ST.Observation(t0,Ho, sha, gha0, gha1, dec))
-#    print "OBSERVATIONS ====== %s"%observations
-#    ST.runLocateMeALot(observations)
-#    return observations
-    # i think here we need to put in an observation
-     
-            
-        #    print "vegaaaaaaaaaa =====%s"%shortList[x]
 
 def runCenterPixelMethod():
     # what would go in __name __ == "__main__" so that way it can be easily 
@@ -291,7 +244,7 @@ def runCenterPixelMethod():
         makeWcsFiles(image)
         t0 = extractTimeFromImage(image)
         wcsFile = grabWcsFile(image)
-        print "wcsFile ========= %s " %wcsFile
+        print("wcsFile ========= %s " %wcsFile)
         starList = getStarDict(wcsFile)
         temp = computeHoFromImage(starList)
         shortList = temp[0]

@@ -76,12 +76,12 @@ class Sextant:
         return Ho
  
     def printAns(self):
-        print self.hSextant        # degrees
-        print self.eyeHeight       # meteres
-        print self.dip
-        print self.hApparent 
-        print self.r 
-        print self.Ho
+        print(self.hSextant)        # degrees
+        print(self.eyeHeight)       # meteres
+        print(self.dip)
+        print(self.hApparent) 
+        print(self.r)
+        print(self.Ho)
 
 class Observation:
     # LF is LONGITUDE
@@ -235,24 +235,23 @@ class Observation:
 
     def printAns(self):
         # prints the data for the different observations
-        print "t == " + str(self.t)
-        print "ho == " + str(self.ho)
-        print "ghAries0 == " + str(self.ghAries0)
-        print "ghAries1 == " + str(self.ghAries1)
-        print "sha == " + str(self.sha)
-        print "increment == " + str(self.increment)
-        print "hourTea == " + str(self.hourTea)
-        print "ghaA == " + str(self.ghaA)
-        print "gha == " + str(self.gha)
-        print "dec == " + str(self.dec)
-        # print "count == " + str(self.count)
-        print "lng == " + str(self.lng)
-        print "lat == " + str(self.lat)
-        print "lha == " + str(self.lha)
-        print "hc == " + str(self.hc)
-        print "z == " + str(self.z)
-        print "p == " + str(self.p)
-        print "pitch" + str(self.pitch)
+        print("t == " + str(self.t))
+        print("ho == " + str(self.ho))
+        print("ghAries0 == " + str(self.ghAries0))
+        print("ghAries1 == " + str(self.ghAries1))
+        print("sha == " + str(self.sha))
+        print("increment == " + str(self.increment))
+        print("hourTea == " + str(self.hourTea))
+        print("ghaA == " + str(self.ghaA))
+        print("gha == " + str(self.gha))
+        print("dec == " + str(self.dec))
+        print("lng == " + str(self.lng))
+        print("lat == " + str(self.lat))
+        print("lha == " + str(self.lha))
+        print("hc == " + str(self.hc))
+        print("z == " + str(self.z))
+        print("p == " + str(self.p))
+        print("pitch" + str(self.pitch))
     
     def writeInertial(self, fileName):
         # this writes the inertial logfile for that observation 
@@ -367,55 +366,55 @@ def locateMe(obs, count, newLong, newLat):
     return [newLong, newLat, d]
 
 def runLocateMeALot(obs):
-	inertialList = [inertialParams, ip1, ip2]
-        changingList = [changingParams, cp1, cp2]
-        # first time
-        count =0 
+    inertialList = [inertialParams, ip1, ip2]
+    changingList = [changingParams, cp1, cp2]
+    # first time
+    count =0 
 
-        location = locateMe(obs, count,0,0)
-        # print "location is %s" %str(location)
-        hoiList = []
-        hciList = []
-        angleDiff = []
+    location = locateMe(obs, count,0,0)
+    # print "location is %s" %str(location)
+    hoiList = []
+    hciList = []
+    angleDiff = []
+    for x in obs:
+        hoi = x.writeInertial(inertialParams)
+        hci = x.writeChanging(changingParams)
+        hoiList.append(hoi)
+        hciList.append(hci)
+    print("hoilist =%s"%hoiList)
+    print("hciList=%s"%hciList)
+
+    # iterate the algorithm 10x
+    while count < 10:
         for x in obs:
-            hoi = x.writeInertial(inertialParams)
-            hci = x.writeChanging(changingParams)
-            hoiList.append(hoi)
-            hciList.append(hci)
-        print "hoilist =%s"%hoiList
-        print "hciList=%s"%hciList
-
-        # iterate the algorithm 10x
-        while count < 10:
-            for x in obs:
-                x.trackStar(location[0], location[1])
-        #        print " new long = %s" %str(x.lng)
-        #        print "new lat = %s" %str(x.lat)
-               # print "new lha = %s" %str(x.lha)
-               # print "new hc = %s" %str(x.hc)
-               # print "new z = %s" %str(x.z)
-               # print "new p = %s" %str(x.p)
-            count = count + 1
-            location = locateMe(obs, count, location[0], location [1]) 
-            for x in obs:
-                x.writeInertial(inertialParams)
-                x.writeChanging(changingParams)
-                x.writeDebug(inertials)
-            if count == 10:
-                dLogFinalPoint.write("%s,%s,%s\n" %(location[0], location[1], location[2]))
-                # put in the amount of pixels away the 
-                analysis.write("%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(hoiList[0],hoiList[1],hoiList[2],hciList[0],hciList[1],hciList[2],location[0],location[1],location[2]))
-                # having the closes here means that ST.py won't run standalone anymore
-                #dLog.close()
-                #inertialParams.close()
-                #changingParams.close()
-                #ip1.close()
-                #cp1.close()
-                #ip2.close()
-                #cp2.close()
-                
-                #dLogFinalPoint.close()
-                return location
+            x.trackStar(location[0], location[1])
+    #        print " new long = %s" %str(x.lng)
+    #        print "new lat = %s" %str(x.lat)
+           # print "new lha = %s" %str(x.lha)
+           # print "new hc = %s" %str(x.hc)
+           # print "new z = %s" %str(x.z)
+           # print "new p = %s" %str(x.p)
+        count = count + 1
+        location = locateMe(obs, count, location[0], location [1]) 
+        for x in obs:
+            x.writeInertial(inertialParams)
+            x.writeChanging(changingParams)
+            x.writeDebug(inertials)
+        if count == 10:
+            dLogFinalPoint.write("%s,%s,%s\n" %(location[0], location[1], location[2]))
+            # put in the amount of pixels away the 
+            analysis.write("%s,%s,%s,%s,%s,%s,%s,%s,%s\n"%(hoiList[0],hoiList[1],hoiList[2],hciList[0],hciList[1],hciList[2],location[0],location[1],location[2]))
+            # having the closes here means that ST.py won't run standalone anymore
+            #dLog.close()
+            #inertialParams.close()
+            #changingParams.close()
+            #ip1.close()
+            #cp1.close()
+            #ip2.close()
+            #cp2.close()
+            
+            #dLogFinalPoint.close()
+            return location
         
 class Image:
     
@@ -447,12 +446,12 @@ if __name__ == "__main__":
         bias =2#-2  #-15 
         bias2 = 0
         # Shuai and I gathered the following observations from the Protractor Sextant, these Ho values are off by a lot
-        altair1 = Observation([01, 29, 46], 54.1452730873 + randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
+        altair1 = Observation([1, 29, 46], 54.1452730873 + randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
        
-        altair2 = Observation([01, 37, 53], 53.5745616879 + randomNumber + bias , [62, 06.6], [13, 36.6], [28, 39.1],
+        altair2 = Observation([1, 37, 53], 53.5745616879 + randomNumber + bias , [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
-        altair3 = Observation([01, 45, 15], 52.9904094195 +randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
+        altair3 = Observation([1, 45, 15], 52.9904094195 +randomNumber + bias, [62, 06.6], [13, 36.6], [28, 39.1],
                                 [8, 55.0])
                
         # these observations are from the nautical almanac 2015        
@@ -479,16 +478,16 @@ if __name__ == "__main__":
 
         # make a new "summer triangle" observation data set, as it would be in the images
 
-        deneb = Observation([01,29,46], 77.7754 + randomNumber + bias ,[49, 30.1], [13, 36.6], 
+        deneb = Observation([1,29,46], 77.7754 + randomNumber + bias ,[49, 30.1], [13, 36.6], 
                                 [28, 39.1], [45, 20.6])
-        vega = Observation([01,29,46], 66.5070 + randomNumber1 + bias , [80, 37.8], [13, 36.6],
+        vega = Observation([1,29,46], 66.5070 + randomNumber1 + bias , [80, 37.8], [13, 36.6],
                             [28, 39.1], [38, 48.4])
-        altair = Observation([01,29,46], 54.1453 +randomNumber2 + bias, [62, 06.6], [13, 36.6],
+        altair = Observation([1,29,46], 54.1453 +randomNumber2 + bias, [62, 06.6], [13, 36.6],
                             [28, 39.1], [8,55.0])
 
-        vega1 = Observation([01,41,39], 84.4709 , [80, 37.8], [13, 36.6],
+        vega1 = Observation([1,41,39], 84.4709 , [80, 37.8], [13, 36.6],
                             [28, 39.1], [38, 48.4])
-        deneb1 = Observation([01,41,39], 79.1819,[49, 30.1], [13, 36.6], 
+        deneb1 = Observation([1,41,39], 79.1819,[49, 30.1], [13, 36.6], 
                                 [28, 39.1], [45, 20.6])
         #altair1 = Observation([01,41,39], 75.8566, [62, 06.6], [13, 36.6],
         #                    [28, 39.1], [8,55.0])
@@ -496,32 +495,32 @@ if __name__ == "__main__":
                
         #turns out the stars we were looking at were NOT the summer triangle
         # might be able to use astrometry.net to do all the image processing
-        deneb =  Observation([01,51,8],83.7740, [49,38.526], [13,36.6],
+        deneb =  Observation([1,51,8],83.7740, [49,38.526], [13,36.6],
                                 [28,39.1], [45, 16.8167] ) #1 
-        gienah = Observation([01,51,8],80.2062, [54, 26.574], [13,36.6],
+        gienah = Observation([1,51,8],80.2062, [54, 26.574], [13,36.6],
                                 [28,39.1],  [40, 15.4008]) #2
-        sadr = Observation([01,51,8 ],78.5567, [54, 26.574], [13,36.6],
+        sadr = Observation([1,51,8 ],78.5567, [54, 26.574], [13,36.6],
                                 [28,39.1], [33,58.2154]) #3
 
-        sulafat = Observation([01,9,9], 64.6841-5.801, [75, 15.8444], [30,22.0],
+        sulafat = Observation([1,9,9], 64.6841-5.801, [75, 15.8444], [30,22.0],
                                 [45, 24.4], [32, 41.3734])
-        sheliak = Observation([01, 9, 9], 63.2888-5.801, [77.0, 28.8012], [30, 22.0],
+        sheliak = Observation([1, 9, 9], 63.2888-5.801, [77.0, 28.8012], [30, 22.0],
                                 [45, 24.4], [33,21.7601])
-        vega2 = Observation([01, 9,9], 64.7062-5.801, [80, 47.02134], [30, 22.0],
+        vega2 = Observation([1, 9,9], 64.7062-5.801, [80, 47.02134], [30, 22.0],
                                 [45, 24.4], [38, 47.01234])
 
-        sulafat = Observation([01,9,9], 63.875971, [75, 15.8444], [30,22.0],
+        sulafat = Observation([1,9,9], 63.875971, [75, 15.8444], [30,22.0],
                                 [45, 24.4], [32, 41.3734])
-        sheliak = Observation([01, 9, 9], 62.54974, [77.0, 28.8012], [30, 22.0],
+        sheliak = Observation([1, 9, 9], 62.54974, [77.0, 28.8012], [30, 22.0],
                                 [45, 24.4], [33,21.7601])
-        vega2 = Observation([01, 9,9], 62.89237, [80, 47.02134], [30, 22.0],
+        vega2 = Observation([1, 9,9], 62.89237, [80, 47.02134], [30, 22.0],
                                 [45, 24.4], [38, 47.01234])
         # rewriting the obs for the true value no noise test
-        sulafat = Observation([01,9,9], 59.2972334791+randomNumber+bias, [75, 15.8444], [30,22.0],
+        sulafat = Observation([1,9,9], 59.2972334791+randomNumber+bias, [75, 15.8444], [30,22.0],
                                 [45, 24.4], [32, 41.3734])
-        sheliak = Observation([01, 9, 9], 58.0257586391+randomNumber1+bias, [77.0, 28.8012], [30, 22.0],
+        sheliak = Observation([1, 9, 9], 58.0257586391+randomNumber1+bias, [77.0, 28.8012], [30, 22.0],
                                 [45, 24.4], [33,21.7601])
-        vega2 = Observation([01, 9,9], 57.9522100447+randomNumber2+bias, [80, 47.02134], [30, 22.0],
+        vega2 = Observation([1, 9,9], 57.9522100447+randomNumber2+bias, [80, 47.02134], [30, 22.0],
                                 [45, 24.4], [38, 47.01234])
 
 
@@ -568,7 +567,7 @@ if __name__ == "__main__":
 
         # 3 stars sighted the same time
         obs = [sulafat, sheliak, vega2]
-	runLocateMeALot(obs)
+        runLocateMeALot(obs)
         #obs = [deneb, gienah, sadr]
         #inertialList = [inertialParams, ip1, ip2]
         #changingList = [changingParams, cp1, cp2]
